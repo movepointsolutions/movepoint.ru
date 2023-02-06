@@ -4,19 +4,10 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include <hiredis.h>
+#include "redis.h"
 
 class Index
 {
-    class Redis
-    {
-        redisContext *ctx;
-    public:
-        Redis();
-        ~Redis();
-        std::string comments() const;
-    } redis;
-
     std::ifstream fhead;
     std::ifstream findex;
     std::ifstream ftail;

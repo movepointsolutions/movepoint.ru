@@ -2,3 +2,7 @@ mithril/
 boost/
 *.o
 movepoint_g
+falconboard/
+movepoint
+redis-cpp/
+redis-plus-plus/

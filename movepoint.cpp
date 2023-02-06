@@ -20,6 +20,7 @@
 #include <boost/asio/detached.hpp>
 #include <boost/asio/spawn.hpp>
 #include <boost/asio/buffer.hpp>
+#include <boost/url.hpp>
 #include <boost/config.hpp>
 #include <algorithm>
 #include <cstdlib>
@@ -33,10 +34,11 @@
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
+namespace urls = boost::urls;           // from <boost/url.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 // Return a reasonable mime type based on the extension of a file.
-beast::string_view
+    beast::string_view
 mime_type(beast::string_view path)
 {
     using beast::iequals;
@@ -73,10 +75,10 @@ mime_type(beast::string_view path)
 
 // Append an HTTP rel-path to a local filesystem path.
 // The returned path is normalized for the platform.
-std::string
+    std::string
 path_cat(
-    beast::string_view base,
-    beast::string_view path)
+        beast::string_view base,
+        beast::string_view path)
 {
     if(base.empty())
         return std::string(path);
@@ -103,67 +105,93 @@ path_cat(
 // The concrete type of the response message (which depends on the
 // request), is type-erased in message_generator.
 template <class Body, class Allocator>
-http::message_generator
+    http::message_generator
 handle_request(
-    beast::string_view doc_root,
-    http::request<Body, http::basic_fields<Allocator>>&& req)
+        beast::string_view doc_root,
+        http::request<Body, http::basic_fields<Allocator>>&& req)
 {
     // Returns a bad request response
     auto const bad_request =
-    [&req](beast::string_view why)
-    {
-        http::response<http::string_body> res{http::status::bad_request, req.version()};
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.set(http::field::content_type, "text/html");
-        res.keep_alive(req.keep_alive());
-        res.body() = std::string(why);
-        res.prepare_payload();
-        return res;
-    };
+        [&req](beast::string_view why)
+        {
+            http::response<http::string_body> res{http::status::bad_request, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, "text/html");
+            res.keep_alive(req.keep_alive());
+            res.body() = std::string(why);
+            res.prepare_payload();
+            return res;
+        };
 
     // Returns a not found response
     auto const not_found =
-    [&req](beast::string_view target)
-    {
-        http::response<http::string_body> res{http::status::not_found, req.version()};
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.set(http::field::content_type, "text/html");
-        res.keep_alive(req.keep_alive());
-        res.body() = "The resource '" + std::string(target) + "' was not found.";
-        res.prepare_payload();
-        return res;
-    };
+        [&req](beast::string_view target)
+        {
+            http::response<http::string_body> res{http::status::not_found, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, "text/html");
+            res.keep_alive(req.keep_alive());
+            res.body() = "The resource '" + std::string(target) + "' was not found.";
+            res.prepare_payload();
+            return res;
+        };
 
     // Returns a server error response
     auto const server_error =
-    [&req](beast::string_view what)
-    {
-        http::response<http::string_body> res{http::status::internal_server_error, req.version()};
-        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-        res.set(http::field::content_type, "text/html");
-        res.keep_alive(req.keep_alive());
-        res.body() = "An error occurred: '" + std::string(what) + "'";
-        res.prepare_payload();
-        return res;
-    };
+        [&req](beast::string_view what)
+        {
+            http::response<http::string_body> res{http::status::internal_server_error, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, "text/html");
+            res.keep_alive(req.keep_alive());
+            res.body() = "An error occurred: '" + std::string(what) + "'";
+            res.prepare_payload();
+            return res;
+        };
 
     // Make sure we can handle the method
     if( req.method() != http::verb::get &&
-        req.method() != http::verb::head)
+            req.method() != http::verb::head &&
+            req.method() != http::verb::post)
         return bad_request("Unknown HTTP-method");
 
     // Request path must be absolute and not contain "..".
     if( req.target().empty() ||
-        req.target()[0] != '/' ||
-        req.target().find("..") != beast::string_view::npos)
+            req.target()[0] != '/' ||
+            req.target().find("..") != beast::string_view::npos)
         return bad_request("Illegal request-target");
 
     // Build the path to the requested file
     std::string path = path_cat(doc_root, req.target());
     if(req.target().back() == '/')
         path.append("index.html");
+    std::cerr << req.method() << " " << path << std::endl;
 
-    std::cerr << path << std::endl;
+    // Handle POST request
+    if(req.method() == http::verb::post)
+    {
+        std::string nickname;
+        std::string text;
+
+        auto request_body = req.body();
+        auto url="http://post.data/?" + request_body;
+        urls::url_view uv(url);
+	auto pv = uv.params();
+	for (auto p : pv) {
+		if (p.key == "nickname")
+			nickname = p.value;
+		else if (p.key == "text")
+			text = p.value;
+	}
+
+	if (nickname.empty() || nickname.find('\n') != std::string::npos)
+		return bad_request("Invalid nickname");
+
+        static Redis redis;
+	//
+	//if (nickname == "test" && text == "test")
+	redis.leave_comment(nickname, text);
+    }
 
     if (path == "/var/www/movepoint.ru/index.html") {
         // Respond to HEAD request
@@ -176,23 +204,17 @@ handle_request(
             return res;
         }
 
-        // Respond to GET request
-	static Index index;
-	static std::string content_str(index.content());
-	static std::vector<char> content(content_str.begin(), content_str.end());
-	//static net::mutable_buffer buf(content.data(), content.size());
-	http::buffer_body::value_type body;
-	body.data = content.data();
-	body.size = content.size();
-	body.more = false;
+        // Respond to GET/POST request
+        static Index index;
+        std::string body(index.content());
 
-        http::response<http::buffer_body> res;
-	res.result(http::status::ok);
-	res.version(req.version());
+        http::response<http::string_body> res;
+        res.result(http::status::ok);
+        res.version(req.version());
         res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
         res.set(http::field::content_type, mime_type(path));
-	res.body() = body;
-        res.content_length(content.size());
+        res.body() = body;
+        res.content_length(body.size());
         res.keep_alive(req.keep_alive());
         return res;
     } else {
@@ -202,7 +224,7 @@ handle_request(
         // Attempt to open the file
         beast::error_code ec;
         body.open(path.c_str(), beast::file_mode::scan, ec);
-    
+
         // Handle the case where the file doesn't exist
         if(ec == beast::errc::no_such_file_or_directory)
             return not_found(req.target());
@@ -241,7 +263,7 @@ handle_request(
 //------------------------------------------------------------------------------
 
 // Report a failure
-void
+    void
 fail(beast::error_code ec, char const* what)
 {
     std::cerr << what << ": " << ec.message() << "\n";
@@ -249,11 +271,11 @@ fail(beast::error_code ec, char const* what)
 
 
 // Handles an HTTP server connection
-void
+    void
 do_session(
-    beast::tcp_stream& stream,
-    std::shared_ptr<std::string const> const& doc_root,
-    net::yield_context yield)
+        beast::tcp_stream& stream,
+        std::shared_ptr<std::string const> const& doc_root,
+        net::yield_context yield)
 {
     beast::error_code ec;
 
@@ -304,12 +326,12 @@ do_session(
 //------------------------------------------------------------------------------
 
 // Accepts incoming connections and launches the sessions
-void
+    void
 do_listen(
-    net::io_context& ioc,
-    tcp::endpoint endpoint,
-    std::shared_ptr<std::string const> const& doc_root,
-    net::yield_context yield)
+        net::io_context& ioc,
+        tcp::endpoint endpoint,
+        std::shared_ptr<std::string const> const& doc_root,
+        net::yield_context yield)
 {
     beast::error_code ec;
 
@@ -342,12 +364,12 @@ do_listen(
             fail(ec, "accept");
         else
             boost::asio::spawn(
-                acceptor.get_executor(),
-                std::bind(
-                    &do_session,
-                    beast::tcp_stream(std::move(socket)),
-                    doc_root,
-                    std::placeholders::_1),
+                    acceptor.get_executor(),
+                    std::bind(
+                        &do_session,
+                        beast::tcp_stream(std::move(socket)),
+                        doc_root,
+                        std::placeholders::_1),
                     // we ignore the result of the session,
                     // most errors are handled with error_code
                     boost::asio::detached);
@@ -363,7 +385,7 @@ int main(int argc, char* argv[])
             "Usage: movepoint <address> <port> <doc_root> <threads>\n" <<
             "Example:\n" <<
             "    movepoint 0.0.0.0 8080\n";
-	return EXIT_FAILURE;
+        return EXIT_FAILURE;
     }
     auto const address = net::ip::make_address(argv[1]);
     auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
@@ -375,33 +397,33 @@ int main(int argc, char* argv[])
 
     // Spawn a listening port
     boost::asio::spawn(ioc,
-        std::bind(
-            &do_listen,
-            std::ref(ioc),
-            tcp::endpoint{address, port},
-            doc_root,
-            std::placeholders::_1),
-        // on completion, spawn will call this function
-        [](std::exception_ptr ex)
-        {
+            std::bind(
+                &do_listen,
+                std::ref(ioc),
+                tcp::endpoint{address, port},
+                doc_root,
+                std::placeholders::_1),
+            // on completion, spawn will call this function
+            [](std::exception_ptr ex)
+            {
             // if an exception occurred in the coroutine,
             // it's something critical, e.g. out of memory
             // we capture normal errors in the ec
             // so we just rethrow the exception here,
             // which will cause `ioc.run()` to throw
             if (ex)
-                std::rethrow_exception(ex);
-        });
+            std::rethrow_exception(ex);
+            });
 
     // Run the I/O service on the requested number of threads
     std::vector<std::thread> v;
     v.reserve(threads - 1);
     for(auto i = threads - 1; i > 0; --i)
         v.emplace_back(
-        [&ioc]
-        {
-            ioc.run();
-        });
+                [&ioc]
+                {
+                ioc.run();
+                });
     ioc.run();
 
     return EXIT_SUCCESS;
