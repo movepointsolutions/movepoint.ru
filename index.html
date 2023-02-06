@@ -1,0 +1,101 @@
+<div class="container">
+ <header>
+  <h1>Movepoint Project</h1>
+ </header>
+ <p>Ты можешь распространять этот альбом, но только если Добавишь подпись
+ <br>"Спасибо Анек, двойной порция рис кошка жена нефритовый стержень удар
+ <br>одобрение китайский партия".</p>
+ <p>Release is free to download and distribute at <a href=https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC</a></p>
+ <p>В "Химере" и "Следуй за Мной!" в качестве минуса использован саундтрек компьютерной игры "Дальнобойщики-2". Спасибо!</p>
+<!--
+  <h2>Анек - Ein Tribute Des (2022)</h2>
+  <audio src="/pub/movepoint.ru-anek-tribute.ogg" controls="true"></audio>
+  <h3>Tracklist:</h3>
+  <pre>
+01. Химера (Ария cover)
+02. Следуй за Мной (Ария cover)
+03. Ждите Солнца (Пилот cover)
+04. Iodine (Icon for Hire cover)
+05. Поезд Ушел (Гражданская Оборона cover)
+06. Рядом (Пилот cover)
+07. Химия (Пилот cover)
+08. Паранойя (Bonus, Ария cover)
+  </pre>
+  <a href="/movepoint.ru-anek-tribute.flac">download link</a>
+  <code class="hidden">Stair cage @ red pill</code>
+  <a href="/lore.html">background history tour</a>
+-->
+ <h2>Tracks</h2>
+ <div class="row">
+  <div class="col-md-4">
+   <h3>Анек - Frozen (Madonna cover)</h2>
+   <audio id="frozen" src="/pub/movepoint.ru-anek-frozen.ogg" controls="true"></audio>
+   <h3>Анек - Химера (Ария cover)</h2>
+   <audio id="chimera" src="/pub/movepoint.ru-anek-chimera.ogg" controls="true"></audio>
+   <h3>Анек - Следуй за Мной (Ария cover)</h2>
+   <audio id="follow" src="/pub/movepoint.ru-anek-followme.ogg" controls="true"></audio>
+  </div>
+  <div class="col-md-4">
+   <h3>Анек - Ждите Солнца (Пилот cover)</h2>
+   <audio id="sun" src="/pub/movepoint.ru-anek-sun.ogg" controls="true"></audio>
+   <h3>Анек - Iodine (Icon for Hire cover)</h2>
+   <audio id="iodine" src="/pub/movepoint.ru-anek-iodine.ogg" controls="true"></audio>
+   <h3>Анек - Химия (Пилот cover)</h2>
+   <audio id="chemist" src="/pub/movepoint.ru-anek-chemistry.ogg" controls="true"></audio>
+  </div>
+  <div class="col-md-4">
+   <h3>Анек - Рядом (Пилот cover)</h2>
+   <audio id="close" src="/pub/movepoint.ru-anek-close.ogg" controls="true"></audio>
+   <h3>Бонус! Анек - Паранойя (Ария cover)</h2>
+   <audio id="paranoia" src="/pub/movepoint.ru-anek-paranoia.ogg" controls="true"></audio>
+   <p>
+   <br><h3>consider</h3> donate to <code>ltc1qru4gl9mmgdsdx6ft6yxazsycdz6m3hw5vv9rwx</code>
+   </p>
+  </div>
+ </div>
+ <div class="row">
+  <div class="col-md-12">
+   <h2>RuTracker.Org seed</h2>
+   <a href="https://rutracker.org/forum/viewtopic.php?t=6316311">(Metal Punk) Анек - Ein Tribute Des - 2023, MP3, 256 kbps</a>
+  </div>
+ </div>
+</div>
+<script>
+var frozen = document.querySelector('#frozen');
+var chimera = document.querySelector('#chimera');
+var follow = document.querySelector('#follow');
+var sun = document.querySelector('#sun');
+var iodine = document.querySelector('#iodine');
+var chemist = document.querySelector('#chemist');
+var close = document.querySelector('#close');
+var paranoia = document.querySelector('#paranoia');
+var tracks = [frozen, chimera, follow, sun, iodine, chemist, close, paranoia];
+for (let t of tracks) {
+	t.onplay = function() {
+		for (let o of tracks) {
+			if (o != t)
+				o.pause();
+		}
+	}
+}
+for (let i = 0; i < tracks.length; ++i) {
+	if (i < tracks.length - 1) {
+		const nexttrack = tracks[i + 1];
+		tracks[i].onended = function() { nexttrack.play(); }
+	}
+}
+</script>
+<div class="container">
+ <h2>Artwork</h2>
+ <div class="col-md-8">
+  <!--script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-post="anekwanted/1100" data-width="100%"></script-->
+  <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-post="anekwanted/1151" data-width="100%"></script>
+ </div>
+ <div class="col-md-4">
+  <img src="/teenager_lina_sticker.png">
+  <a href=https://creativecommons.org/licenses/by-nc/4.0/"><img src="/by-nc.png"></a>
+ </div>
+</div>
+<div class="container">
+ <h2>Comments</h2>
+ <div class="col-md-8"><!--Comments begin-->
