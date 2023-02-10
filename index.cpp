@@ -22,6 +22,6 @@ std::string Index::content() const
     Redis redis;
     redis.hit();
     std::string a = redis.archive("movepoint.ru:archive0");
-    std::string ret = head.str() + index.str() + archive.str() + a + comments.str() + redis.comments() + tail.str();
+    std::string ret = head.str() + "<body>" + index.str() + archive.str() + a + comments.str() + redis.comments() + tail.str() + "/body></html>";
     return ret;
 }

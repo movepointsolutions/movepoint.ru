@@ -21,7 +21,7 @@ std::string Season1::content() const
 {
     Redis redis;
     redis.hit();
-    std::string a = redis.archive("movepoint.ru:archive0");
-    std::string ret = head.str() + index.str() + archive.str() + a + comments.str() + redis.comments() + tail.str();
+    auto archive = redis.archive("movepoint.ru:archive0");
+    std::string ret = head.str() + index.str() + archive + tail.str();
     return ret;
 }
