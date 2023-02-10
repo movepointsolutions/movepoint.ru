@@ -13,11 +13,11 @@ class Season1
     std::ifstream farchive;
     std::ifstream fcomments;
     std::ifstream ftail;
-    std::ostringstream head;
-    std::ostringstream index;
-    std::ostringstream archive;
-    std::ostringstream comments;
-    std::ostringstream tail;
+    std::ostringstream thead;
+    std::ostringstream tindex;
+    std::ostringstream tarchive;
+    std::ostringstream tcomments;
+    std::ostringstream ttail;
 
 public:
     Season1();
