@@ -1,5 +1,11 @@
 #include "engine.h"
 
+namespace html {
+const char t_html[] = "html";
+const char t_head[] = "head";
+const char t_body[] = "body";
+}
+
 std::string tag_base::innerhtml() const
 {
 	return innerhtml_;

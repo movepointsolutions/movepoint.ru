@@ -6,10 +6,6 @@
 
 using namespace std::string_literals;
 
-const char t_html[] = "html";
-const char t_head[] = "head";
-const char t_body[] = "body";
-
 Season1::Season1()
     : fhead("head.htm")
     , findex("index.html")
@@ -30,15 +26,13 @@ std::string Season1::content() const
     redis.hit();
     auto archive = redis.archive("movepoint.ru:archive0");
     auto doctype = "<!DOCTYPE html>"s;
-    tag<t_html> html;
-    html.push_attr("lang=\"ru\"");
-    tag<t_head> head;
+    html::html htm;
+    htm.push_attr("lang=\"ru\"");
+    html::head head;
     head.innerhtml(thead.str());
-    tag<t_body> body;
+    html::body body;
     auto bodyhtml = tindex.str() + tarchive.str() + archive + ttail.str();
     body.innerhtml(bodyhtml);
-    html.innerhtml(head.content() + body.content());
-    return doctype + html.content();
-    //std::string ret = head.str() + index.str() + archive + tail.str();
-    //return ret;
+    htm.innerhtml(head.content() + body.content());
+    return doctype + htm.content();
 }

@@ -6,10 +6,6 @@
 
 using namespace std::string_literals;
 
-const char t_html[] = "html";
-const char t_head[] = "head";
-const char t_body[] = "body";
-
 Index::Index()
     : fhead("head.htm")
     , findex("index.html")
@@ -32,13 +28,13 @@ std::string Index::content() const
     redis.hit();
     std::string a = redis.archive("movepoint.ru:archive0");
     auto doctype = "<!DOCTYPE html>"s;
-    tag<t_html> html;
-    html.push_attr("lang=\"ru\"");
-    tag<t_head> head;
+    html::html htm;
+    htm.push_attr("lang=\"ru\"");
+    html::head head;
     head.innerhtml(thead.str());
-    tag<t_body> body;
+    html::body body;
     auto bodyhtml = tindex.str() + tcomments.str() + redis.comments() + tcommenttoo.str() + ttail.str();
     body.innerhtml(bodyhtml);
-    html.innerhtml(head.content() + body.content());
-    return doctype + html.content();
+    htm.innerhtml(head.content() + body.content());
+    return doctype + htm.content();
 }

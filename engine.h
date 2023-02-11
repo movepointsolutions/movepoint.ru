@@ -26,4 +26,15 @@ struct tag : public tag_base
 	}
 };
 
+namespace html
+{
+	extern const char t_html[];
+	extern const char t_head[];
+	extern const char t_body[];
+
+	typedef tag<t_html> html;
+	typedef tag<t_head> head;
+	typedef tag<t_body> body;
+}
+
 #endif // ENGINE_H
