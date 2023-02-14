@@ -13,6 +13,7 @@ public:
 	void innerhtml(const std::string &);
 	std::string attrshtml() const;
 	void push_attr(const std::string &);
+	void push_attr(const std::string &, const std::string &);
 };
 
 template <const char *TagName>
@@ -26,7 +27,7 @@ struct tag : public tag_base
 	}
 };
 
-namespace html
+namespace tags
 {
 	extern const char t_html[];
 	extern const char t_head[];

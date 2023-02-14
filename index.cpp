@@ -28,13 +28,13 @@ std::string Index::content() const
     redis.hit();
     std::string a = redis.archive("movepoint.ru:archive0");
     auto doctype = "<!DOCTYPE html>"s;
-    html::html htm;
-    htm.push_attr("lang=\"ru\"");
-    html::head head;
+    tags::html html;
+    html.push_attr("lang", "ru");
+    tags::head head;
     head.innerhtml(thead.str());
-    html::body body;
+    tags::body body;
     auto bodyhtml = tindex.str() + tcomments.str() + redis.comments() + tcommenttoo.str() + ttail.str();
     body.innerhtml(bodyhtml);
-    htm.innerhtml(head.content() + body.content());
-    return doctype + htm.content();
+    html.innerhtml(head.content() + body.content());
+    return doctype + html.content();
 }
