@@ -31,6 +31,8 @@
 #include <vector>
 #include "index.h"
 #include "season1.h"
+#include "season2.h"
+#include "season3.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -76,7 +78,7 @@ mime_type(beast::string_view path)
 
 // Append an HTTP rel-path to a local filesystem path.
 // The returned path is normalized for the platform.
-    std::string
+std::string
 path_cat(
         beast::string_view base,
         beast::string_view path)
@@ -232,6 +234,54 @@ handle_request(
         // Respond to GET/POST request
         static Season1 season1;
         std::string body(season1.content());
+
+        http::response<http::string_body> res;
+        res.result(http::status::ok);
+        res.version(req.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, mime_type(path));
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(req.keep_alive());
+        return res;
+    } else if (path == "/var/www/movepoint.ru/season2.html") {
+        // Respond to HEAD request
+        if(req.method() == http::verb::head)
+        {
+            http::response<http::empty_body> res{http::status::ok, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, mime_type(path));
+            res.keep_alive(req.keep_alive());
+            return res;
+        }
+
+        // Respond to GET/POST request
+        static Season2 season2;
+        std::string body(season2.content());
+
+        http::response<http::string_body> res;
+        res.result(http::status::ok);
+        res.version(req.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, mime_type(path));
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(req.keep_alive());
+        return res;
+    } else if (path == "/var/www/movepoint.ru/season3.html") {
+        // Respond to HEAD request
+        if(req.method() == http::verb::head)
+        {
+            http::response<http::empty_body> res{http::status::ok, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, mime_type(path));
+            res.keep_alive(req.keep_alive());
+            return res;
+        }
+
+        // Respond to GET/POST request
+        static Season3 season3;
+        std::string body(season3.content());
 
         http::response<http::string_body> res;
         res.result(http::status::ok);

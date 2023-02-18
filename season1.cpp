@@ -9,7 +9,7 @@ using namespace std::string_literals;
 Season1::Season1()
     : fhead("head.htm")
     , findex("index.html")
-    , farchive("archive.htm")
+    , farchive("season1.html")
     , fcomments("comments.htm")
     , ftail("tail.htm")
 {
@@ -24,7 +24,7 @@ std::string Season1::content() const
 {
     Redis redis;
     redis.hit();
-    auto archive = redis.archive("movepoint.ru:archive0");
+    auto archive = redis.archive("movepoint.ru:season1");
     auto doctype = "<!DOCTYPE html>"s;
     tags::html html;
     html.push_attr("lang", "ru");
