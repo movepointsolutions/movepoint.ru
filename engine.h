@@ -32,10 +32,12 @@ namespace tags
 	extern const char t_html[];
 	extern const char t_head[];
 	extern const char t_body[];
+	extern const char t_div[];
 
 	typedef tag<t_html> html;
 	typedef tag<t_head> head;
 	typedef tag<t_body> body;
+	typedef tag<t_div> div;
 }
 
 #endif // ENGINE_H

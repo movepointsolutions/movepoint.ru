@@ -4,6 +4,7 @@ namespace tags {
 	const char t_html[] = "html";
 	const char t_head[] = "head";
 	const char t_body[] = "body";
+	const char t_div[] = "div";
 }
 
 std::string tag_base::innerhtml() const
