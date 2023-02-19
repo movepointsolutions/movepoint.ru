@@ -29,8 +29,13 @@ std::string Index::content() const
     tags::body body;
     tags::div container;
     container.push_attr("class", "container");
-    container.innerhtml(s_comments.content() + redis.comments() + s_commenttoo.content());
-    auto bodyhtml = s_index.content() + container.content() + s_lina.content() + s_tail.content();
+    tags::div container1;
+    container1.push_attr("class", "container col-md-8");
+    container.innerhtml(container1.openhtml() + s_comments.content() + redis.comments() + s_commenttoo.content());
+    tags::div container2;
+    container2.push_attr("class", "container col-md-4");
+    container2.innerhtml(s_lina.content());
+    auto bodyhtml = s_index.content() + container.content() + container2.content() + container1.closehtml() + s_tail.content();
     body.innerhtml(bodyhtml);
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();

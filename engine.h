@@ -19,11 +19,16 @@ public:
 template <const char *TagName>
 struct tag : public tag_base
 {
-	std::string content() const {
+	std::string openhtml() const {
 		using namespace std::string_literals;
-		return "<"s + TagName + " " + this->attrshtml() + ">"
-		       + this->innerhtml()
-		       + "</"s + TagName + ">";
+		return "<"s + TagName + " " + this->attrshtml() + ">";
+	}
+	std::string closehtml() const {
+		using namespace std::string_literals;
+		return "</"s + TagName + ">";
+	}
+	std::string content() const {
+		return this->openhtml() + this->innerhtml() + this->closehtml();
 	}
 };
 
