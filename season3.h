@@ -11,12 +11,10 @@ class Season3
     std::ifstream fhead;
     std::ifstream findex;
     std::ifstream farchive;
-    std::ifstream fcomments;
     std::ifstream ftail;
     std::ostringstream thead;
     std::ostringstream tindex;
     std::ostringstream tarchive;
-    std::ostringstream tcomments;
     std::ostringstream ttail;
 
 public:

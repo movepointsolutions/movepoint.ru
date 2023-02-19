@@ -32,7 +32,10 @@ std::string Index::content() const
     tags::head head;
     head.innerhtml(thead.str());
     tags::body body;
-    auto bodyhtml = tindex.str() + tcomments.str() + redis.comments() + tcommenttoo.str() + ttail.str();
+    tags::div container;
+    container.push_attr("class", "container");
+    container.innerhtml(tcomments.str() + redis.comments() + tcommenttoo.str());
+    auto bodyhtml = tindex.str() + container.content() + ttail.str();
     body.innerhtml(bodyhtml);
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();

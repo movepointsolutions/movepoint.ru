@@ -10,13 +10,11 @@ Season1::Season1()
     : fhead("head.htm")
     , findex("index.html")
     , farchive("season1.html")
-    , fcomments("comments.htm")
     , ftail("tail.htm")
 {
     thead << fhead.rdbuf();
     tindex << findex.rdbuf();
     tarchive << farchive.rdbuf();
-    tcomments << fcomments.rdbuf();
     ttail << ftail.rdbuf();
 }
 
