@@ -12,6 +12,7 @@ Index::Index()
     , s_archive("archive.htm")
     , s_comments("comments.htm")
     , s_commenttoo("comment_too.htm")
+    , s_lina("lina.html")
     , s_tail("tail.htm")
 {
 }
@@ -29,7 +30,7 @@ std::string Index::content() const
     tags::div container;
     container.push_attr("class", "container");
     container.innerhtml(s_comments.content() + redis.comments() + s_commenttoo.content());
-    auto bodyhtml = s_index.content() + container.content() + s_tail.content();
+    auto bodyhtml = s_index.content() + container.content() + s_lina.content() + s_tail.content();
     body.innerhtml(bodyhtml);
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();

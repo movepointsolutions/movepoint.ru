@@ -12,6 +12,7 @@ class Index
     snippet s_archive;
     snippet s_comments;
     snippet s_commenttoo;
+    snippet s_lina;
     snippet s_tail;
 
 public:
