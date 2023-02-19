@@ -7,19 +7,13 @@
 using namespace std::string_literals;
 
 Index::Index()
-    : fhead("head.htm")
-    , findex("index.html")
-    , farchive("archive.htm")
-    , fcomments("comments.htm")
-    , fcommenttoo("comment_too.htm")
-    , ftail("tail.htm")
+    : s_head("head.htm")
+    , s_index("index.html")
+    , s_archive("archive.htm")
+    , s_comments("comments.htm")
+    , s_commenttoo("comment_too.htm")
+    , s_tail("tail.htm")
 {
-    thead << fhead.rdbuf();
-    tindex << findex.rdbuf();
-    tarchive << farchive.rdbuf();
-    tcomments << fcomments.rdbuf();
-    tcommenttoo << fcommenttoo.rdbuf();
-    ttail << ftail.rdbuf();
 }
 
 std::string Index::content() const
@@ -30,12 +24,12 @@ std::string Index::content() const
     tags::html html;
     html.push_attr("lang", "ru");
     tags::head head;
-    head.innerhtml(thead.str());
+    head.innerhtml(s_head.content());
     tags::body body;
     tags::div container;
     container.push_attr("class", "container");
-    container.innerhtml(tcomments.str() + redis.comments() + tcommenttoo.str());
-    auto bodyhtml = tindex.str() + container.content() + ttail.str();
+    container.innerhtml(s_comments.content() + redis.comments() + s_commenttoo.content());
+    auto bodyhtml = s_index.content() + container.content() + s_tail.content();
     body.innerhtml(bodyhtml);
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();
