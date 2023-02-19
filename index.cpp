@@ -10,7 +10,6 @@ Index::Index()
     : s_head("head.htm")
     , s_index("index.html")
     , s_archive("archive.htm")
-    , s_comments("comments.htm")
     , s_commenttoo("comment_too.htm")
     , s_lina("lina.html")
     , s_tail("tail.htm")
@@ -31,7 +30,9 @@ std::string Index::content() const
     container.push_attr("class", "container");
     tags::div container1;
     container1.push_attr("class", "container col-md-8");
-    container1.innerhtml(s_comments.content() + redis.comments() + s_commenttoo.content());
+    tags::h2 comments;
+    comments.innerhtml("Комментарии"s);
+    container1.innerhtml(comments.content() + redis.comments() + s_commenttoo.content());
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
     container2.innerhtml(s_lina.content());

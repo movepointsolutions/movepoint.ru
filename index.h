@@ -10,7 +10,6 @@ class Index
     snippet s_head;
     snippet s_index;
     snippet s_archive;
-    snippet s_comments;
     snippet s_commenttoo;
     snippet s_lina;
     snippet s_tail;

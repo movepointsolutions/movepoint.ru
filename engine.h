@@ -38,11 +38,17 @@ namespace tags
 	extern const char t_head[];
 	extern const char t_body[];
 	extern const char t_div[];
+	extern const char t_h1[];
+	extern const char t_h2[];
+	extern const char t_h3[];
 
 	typedef tag<t_html> html;
 	typedef tag<t_head> head;
 	typedef tag<t_body> body;
 	typedef tag<t_div> div;
+	typedef tag<t_h1> h1;
+	typedef tag<t_h2> h2;
+	typedef tag<t_h3> h3;
 }
 
 #endif // ENGINE_H
