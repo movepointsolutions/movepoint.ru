@@ -5,29 +5,33 @@
  <h2>Анек - Ein Tribute Des (2023)</h2>
  <p>Release is free to download and distribute at <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC</a></p>
  <p>В "Химере" и "Следуй за Мной!" в качестве минуса использован саундтрек компьютерной игры "Дальнобойщики-2". Спасибо!</p>
- <h2>Треки</h2>
  <div class="row">
   <div class="col-md-4">
-   <h3>Анек - Frozen (Madonna cover)</h3>
+   <h2>Side A</h2>
+   <h3>Frozen (Madonna)</h3>
    <audio id="frozen" src="/pub/movepoint.ru-anek-frozen.ogg" controls></audio>
-   <h3>Анек - Химера (Ария cover)</h3>
+   <h3>Химера (Ария)</h3>
    <audio id="chimera" src="/pub/movepoint.ru-anek-chimera.ogg" controls></audio>
-   <h3>Анек - Следуй за Мной (Ария cover)</h3>
+   <h3>Следуй за Мной (Ария)</h3>
    <audio id="follow" src="/pub/movepoint.ru-anek-followme.ogg" controls></audio>
   </div>
   <div class="col-md-4">
-   <h3>Анек - Ждите Солнца (Пилот cover)</h3>
+   <h2>Side B</h2>
+   <h3>Ждите Солнца (Пилот)</h3>
    <audio id="sun" src="/pub/movepoint.ru-anek-sun.ogg" controls></audio>
-   <h3>Анек - Iodine (Icon for Hire cover)</h3>
+   <h3>Iodine (Icon for Hire)</h3>
    <audio id="iodine" src="/pub/movepoint.ru-anek-iodine.ogg" controls></audio>
-   <h3>Анек - Химия (Пилот cover)</h3>
+   <h3>Химия (Пилот)</h3>
    <audio id="chemist" src="/pub/movepoint.ru-anek-chemistry.ogg" controls></audio>
   </div>
   <div class="col-md-4">
-   <h3>Анек - Рядом (Пилот cover)</h3>
+   <h2>Side C</h2>
+   <h3>Рядом (Пилот)</h3>
    <audio id="close" src="/pub/movepoint.ru-anek-close.ogg" controls></audio>
-   <h3>Бонус! Анек - Паранойя (Ария cover)</h3>
+   <h3>Бонус! Паранойя (Ария)</h3>
    <audio id="paranoia" src="/pub/movepoint.ru-anek-paranoia.ogg" controls></audio>
+   <h3>Бонус! Дядя Юра Прокурор (Александр Новиков)</h3>
+   <audio id="uncle" src="/pub/movepoint.ru-anek-uncle.ogg" controls></audio>
    <br><h3>consider</h3> donate to <code>ltc1qru4gl9mmgdsdx6ft6yxazsycdz6m3hw5vv9rwx</code>
   </div>
  </div>
@@ -38,28 +42,3 @@
   </div>
  </div>
 </div>
-<script>
-var frozen = document.querySelector('#frozen');
-var chimera = document.querySelector('#chimera');
-var follow = document.querySelector('#follow');
-var sun = document.querySelector('#sun');
-var iodine = document.querySelector('#iodine');
-var chemist = document.querySelector('#chemist');
-var close = document.querySelector('#close');
-var paranoia = document.querySelector('#paranoia');
-var tracks = [frozen, chimera, follow, sun, iodine, chemist, close, paranoia];
-for (let t of tracks) {
-	t.onplay = function() {
-		for (let o of tracks) {
-			if (o != t)
-				o.pause();
-		}
-	}
-}
-for (let i = 0; i < tracks.length; ++i) {
-	if (i < tracks.length - 1) {
-		const nexttrack = tracks[i + 1];
-		tracks[i].onended = function() { nexttrack.play(); }
-	}
-}
-</script>

@@ -13,6 +13,7 @@ Index::Index()
     , s_commenttoo("comment_too.htm")
     , s_lina("lina.html")
     , s_tail("tail.htm")
+    , s_script("script.js")
 {
 }
 
@@ -32,12 +33,24 @@ std::string Index::content() const
     container1.push_attr("class", "container col-md-8");
     tags::h2 comments;
     comments.innerhtml("Комментарии"s);
-    container1.innerhtml(comments.content() + redis.comments() + s_commenttoo.content());
+    tags::a season1;
+    season1.push_attr("href", "/season1.html");
+    season1.innerhtml("Season 1");
+    tags::a season2;
+    season2.push_attr("href", "/season2.html");
+    season2.innerhtml("Season 2");
+    tags::a season3;
+    season3.push_attr("href", "/season3.html");
+    season3.innerhtml("Season 3");
+    container1.innerhtml(comments.content() + season1.content() + season2.content() +
+		    season3.content() + redis.comments() + s_commenttoo.content());
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
     container2.innerhtml(s_lina.content());
     container.innerhtml(container1.content() + container2.content());
-    auto bodyhtml = s_index.content() + container.content() + s_tail.content();
+    tags::script script;
+    script.innerhtml(s_script.content());
+    auto bodyhtml = s_index.content() + container.content() + script.content() + s_tail.content();
     body.innerhtml(bodyhtml);
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();

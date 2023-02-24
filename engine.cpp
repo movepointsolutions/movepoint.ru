@@ -8,6 +8,8 @@ namespace tags {
 	const char t_h1[] = "h1";
 	const char t_h2[] = "h2";
 	const char t_h3[] = "h3";
+	const char t_script[] = "script";
+	const char t_a[] = "a";
 }
 
 std::string tag_base::innerhtml() const
@@ -33,12 +35,9 @@ void tag_base::push_attr(const std::string &an, const std::string &av)
 std::string tag_base::attrshtml() const
 {
 	std::string ret;
-	bool first = true;
 	for (const auto a : attrs) {
-		if (!first)
-			ret += " ";
+		ret += " ";
 		ret += a;
-		first = false;
 	}
 	return ret;
 }

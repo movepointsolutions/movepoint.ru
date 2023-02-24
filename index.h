@@ -13,6 +13,7 @@ class Index
     snippet s_commenttoo;
     snippet s_lina;
     snippet s_tail;
+    snippet s_script;
 
 public:
     Index();
