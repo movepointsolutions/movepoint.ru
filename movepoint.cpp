@@ -168,7 +168,9 @@ handle_request(
     std::string path = path_cat(doc_root, req.target());
     if(req.target().back() == '/')
         path.append("index.html");
-    std::cerr << req.method() << " " << path << std::endl;
+    auto fields = req.base();
+    auto forwarded = fields[http::field::forwarded];
+    std::cerr << req.method() << " " << path << " " << forwarded << std::endl;
 
     // Handle POST request
     if(req.method() == http::verb::post)

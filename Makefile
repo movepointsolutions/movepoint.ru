@@ -4,7 +4,7 @@ default: run
 	#LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib ./movepoint_g 127.0.0.1 8080
 
 run: movepoint
-	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib ./movepoint 127.0.0.1 8080
+	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib ./movepoint 127.0.0.1 8080 | tee -a log
 
 #movepoint_g: movepoint.cpp index.cpp redis.cpp index.h track.h redis.h Makefile
 	#g++ -o $@ -std=c++17 -I/home/anek/www/boost `pkg-config --cflags --libs redis++` movepoint.cpp index.cpp redis.cpp -L/home/anek/www/boost/stage/lib -pthread -lboost_system -lboost_context -lboost_url
