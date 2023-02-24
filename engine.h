@@ -43,6 +43,8 @@ namespace tags
 	extern const char t_h3[];
 	extern const char t_script[];
 	extern const char t_a[];
+	extern const char t_p[];
+	extern const char t_code[];
 
 	typedef tag<t_html> html;
 	typedef tag<t_head> head;
@@ -53,6 +55,8 @@ namespace tags
 	typedef tag<t_h3> h3;
 	typedef tag<t_script> script;
 	typedef tag<t_a> a;
+	typedef tag<t_p> p;
+	typedef tag<t_code> code;
 }
 
 #endif // ENGINE_H

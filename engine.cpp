@@ -10,6 +10,8 @@ namespace tags {
 	const char t_h3[] = "h3";
 	const char t_script[] = "script";
 	const char t_a[] = "a";
+	const char t_p[] = "p";
+	const char t_code[] = "code";
 }
 
 std::string tag_base::innerhtml() const

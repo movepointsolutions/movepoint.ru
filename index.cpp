@@ -33,17 +33,21 @@ std::string Index::content() const
     container1.push_attr("class", "container col-md-8");
     tags::h2 comments;
     comments.innerhtml("Комментарии"s);
-    tags::a season1;
-    season1.push_attr("href", "/season1.html");
-    season1.innerhtml("Season 1");
-    tags::a season2;
-    season2.push_attr("href", "/season2.html");
-    season2.innerhtml("Season 2");
-    tags::a season3;
-    season3.push_attr("href", "/season3.html");
-    season3.innerhtml("Season 3");
-    container1.innerhtml(comments.content() + season1.content() + season2.content() +
-		    season3.content() + redis.comments() + s_commenttoo.content());
+    tags::p seasons;
+    {
+	    tags::a season1;
+	    season1.push_attr("href", "/season1.html");
+	    season1.innerhtml("Season 1");
+	    tags::a season2;
+	    season2.push_attr("href", "/season2.html");
+	    season2.innerhtml("Season 2");
+	    tags::a season3;
+	    season3.push_attr("href", "/season3.html");
+	    season3.innerhtml("Season 3");
+	    seasons.innerhtml(season1.content() + season2.content() + season3.content());
+    }
+    seasons.push_attr("class", "hidden");
+    container1.innerhtml(comments.content() + seasons.content() + redis.comments() + s_commenttoo.content());
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
     container2.innerhtml(s_lina.content());
