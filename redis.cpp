@@ -58,6 +58,7 @@ static std::string comments(const char *key)
 	redis.lrange(key, 0, -1, std::back_inserter(elements));
 	//std::cerr << "Comments: " << elements.size() << std::endl;
 	for (auto element : elements) {
+		std::ostringstream comment;
 		const char *n = element.c_str();
 		const char *c = n;
 		int count = 0;
@@ -70,10 +71,11 @@ static std::string comments(const char *key)
 		text = escape(text);
 		nickname = limit(nickname, 64);
 		text = limit(text, 16384);
-		ret << indent << "<article class=\"comment\">" << std::endl;
-		ret << indent << " <h4>" << nickname << "</h4>" << std::endl;
-		ret << indent << " <i>" << text << "</i>" << std::endl;
-		ret << indent << "</article>" << std::endl;
+		comment << indent << "<article class=\"comment\"><pre>" << std::endl;
+		comment << indent << " <h4>" << nickname << "</h4>" << std::endl;
+		comment << indent << " <i>" << text << "</i>" << std::endl;
+		comment << indent << "</pre></article>" << std::endl;
+		ret << comment.str();
 	}
 	return ret.str();
 }

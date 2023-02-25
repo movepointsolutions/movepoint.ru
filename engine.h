@@ -32,31 +32,11 @@ struct tag : public tag_base
 	}
 };
 
+#define TAG(_tag) extern const char t_##_tag[]; typedef tag<t_##_tag> _tag;
 namespace tags
 {
-	extern const char t_html[];
-	extern const char t_head[];
-	extern const char t_body[];
-	extern const char t_div[];
-	extern const char t_h1[];
-	extern const char t_h2[];
-	extern const char t_h3[];
-	extern const char t_script[];
-	extern const char t_a[];
-	extern const char t_p[];
-	extern const char t_code[];
-
-	typedef tag<t_html> html;
-	typedef tag<t_head> head;
-	typedef tag<t_body> body;
-	typedef tag<t_div> div;
-	typedef tag<t_h1> h1;
-	typedef tag<t_h2> h2;
-	typedef tag<t_h3> h3;
-	typedef tag<t_script> script;
-	typedef tag<t_a> a;
-	typedef tag<t_p> p;
-	typedef tag<t_code> code;
+#include "tags.h"
 }
+#undef TAG
 
 #endif // ENGINE_H

@@ -1,18 +1,10 @@
 #include "engine.h"
 
+#define TAG(tag) const char t_##tag[] = #tag
 namespace tags {
-	const char t_html[] = "html";
-	const char t_head[] = "head";
-	const char t_body[] = "body";
-	const char t_div[] = "div";
-	const char t_h1[] = "h1";
-	const char t_h2[] = "h2";
-	const char t_h3[] = "h3";
-	const char t_script[] = "script";
-	const char t_a[] = "a";
-	const char t_p[] = "p";
-	const char t_code[] = "code";
+#include "tags.h"
 }
+#undef TAG
 
 std::string tag_base::innerhtml() const
 {

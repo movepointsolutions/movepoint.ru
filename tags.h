@@ -1,0 +1,15 @@
+TAG(html);
+TAG(head);
+TAG(body);
+TAG(div);
+TAG(h1);
+TAG(h2);
+TAG(h3);
+TAG(script);
+TAG(a);
+TAG(p);
+TAG(code);
+TAG(pre);
+TAG(h4);
+TAG(i);
+TAG(article);
