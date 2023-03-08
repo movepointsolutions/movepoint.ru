@@ -14,6 +14,7 @@ Index::Index()
     , s_lina("lina.html")
     , s_tail("tail.htm")
     , s_script("script.js")
+    , s_style("style.css")
 {
 }
 
@@ -25,7 +26,9 @@ std::string Index::content() const
     tags::html html;
     html.push_attr("lang", "ru");
     tags::head head;
-    head.innerhtml(s_head.content());
+    tags::style style;
+    style.innerhtml(s_style.content());
+    head.innerhtml(s_head.content() + style.content());
     tags::body body;
     tags::div container;
     container.push_attr("class", "container");

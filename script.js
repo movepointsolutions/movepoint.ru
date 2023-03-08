@@ -7,7 +7,10 @@ var chemist = document.querySelector('#chemist');
 var close = document.querySelector('#close');
 var paranoia = document.querySelector('#paranoia');
 var uncle = document.querySelector('#uncle');
-var tracks = [frozen, chimera, follow, sun, iodine, chemist, close, paranoia, uncle];
+var chemist2023 = document.querySelector('#chemist2023');
+var sun2023 = document.querySelector('#sun2023');
+var iodine2023 = document.querySelector('#iodine2023');
+var tracks = [frozen, chimera, follow, sun, iodine, chemist, close, paranoia, uncle, chemist2023, sun2023, iodine2023];
 for (let t of tracks) {
 	t.onplay = function() {
 		for (let o of tracks) {

@@ -14,6 +14,7 @@ class Index
     snippet s_lina;
     snippet s_tail;
     snippet s_script;
+    snippet s_style;
 
 public:
     Index();

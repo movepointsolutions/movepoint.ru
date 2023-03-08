@@ -1,0 +1,5 @@
+.hidden { visibility: hidden; }
+article.comment {
+  border: solid #484848;
+  background-color: #f0fff0;
+}
