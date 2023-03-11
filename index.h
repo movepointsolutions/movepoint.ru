@@ -15,6 +15,8 @@ class Index
     snippet s_tail;
     snippet s_script;
     snippet s_style;
+    snippet s_header;
+    snippet s_rutracker;
 
 public:
     Index();

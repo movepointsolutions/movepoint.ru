@@ -14,3 +14,4 @@ TAG(h4);
 TAG(i);
 TAG(article);
 TAG(style);
+TAG(header);

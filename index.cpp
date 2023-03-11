@@ -15,6 +15,8 @@ Index::Index()
     , s_tail("tail.htm")
     , s_script("script.js")
     , s_style("style.css")
+    , s_header("header.htm")
+    , s_rutracker("rutracker.htm")
 {
 }
 
@@ -57,8 +59,14 @@ std::string Index::content() const
     container.innerhtml(container1.content() + container2.content());
     tags::script script;
     script.innerhtml(s_script.content());
-    auto bodyhtml = s_index.content() + container.content() + script.content() + s_tail.content();
-    body.innerhtml(bodyhtml);
+    tags::header header;
+    header.innerhtml(s_header.content());
+    auto bodyhtml = header.content() + s_index.content() + s_rutracker.content()
+	            + container.content() + script.content() + s_tail.content();
+    tags::div outer_container;
+    outer_container.push_attr("class", "container");
+    outer_container.innerhtml(bodyhtml);
+    body.innerhtml(outer_container.content());
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();
 }
