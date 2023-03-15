@@ -25,6 +25,24 @@ static std::string limit(std::string str, size_t size)
 {
 	if (str.size() > size)
 		str.resize(size);
+	std::string::iterator i = str.begin();
+	while (true) {
+		std::string::iterator j = i;
+		for (int k = 0; k < 107; k++) {
+			if (*j == '\n')
+				k = 1;
+			if (j != str.end())
+				++j;
+		}
+		if (j == str.end())
+			break;
+		while (*j != ' ' && j != str.end())
+			j++;
+		if (j == str.end())
+			break;
+		*j = '\n';
+		i = ++j;
+	}
 	return str;
 }
 

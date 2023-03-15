@@ -23,5 +23,8 @@ for (let i = 0; i < tracks.length; ++i) {
 	if (i < tracks.length - 1) {
 		const nexttrack = tracks[i + 1];
 		tracks[i].onended = function() { nexttrack.play(); }
+	} else {
+		const nexttrack = tracks[i - 2];
+		tracks[i].onended = function() { nexttrack.play(); }
 	}
 }
