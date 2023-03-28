@@ -62,7 +62,7 @@ std::string Redis::status()
 {
 	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
 	std::vector<std::string> statuses;
-	redis.lrange("movepoint.ru:status", -2, -1, std::back_inserter(statuses));
+	redis.lrange("movepoint.ru:status", -1, -1, std::back_inserter(statuses));
 	std::ostringstream ret;
 	for (const auto &s : statuses)
 		ret << escape(s);
