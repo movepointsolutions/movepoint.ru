@@ -58,6 +58,17 @@ long long Redis::hits()
 	return redis.command<long long>("get", "movepoint.ru:hits");
 }
 
+std::string Redis::status()
+{
+	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	std::vector<std::string> statuses;
+	redis.lrange("movepoint.ru:status", -2, -1, std::back_inserter(statuses));
+	std::ostringstream ret;
+	for (const auto &s : statuses)
+		ret << escape(s);
+	return ret.str();
+}
+
 void Redis::leave_comment(const std::string &nickname, const std::string &text)
 {
 	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");

@@ -60,7 +60,9 @@ std::string Index::content() const
     tags::script script;
     script.innerhtml(s_script.content());
     tags::header header;
-    header.innerhtml(s_header.content());
+    tags::h2 status;
+    status.innerhtml(redis.status() + " edition");
+    header.innerhtml(s_header.content() + status.content());
     auto bodyhtml = header.content() + s_index.content() + s_rutracker.content()
 	            + container.content() + script.content() + s_tail.content();
     tags::div outer_container;
