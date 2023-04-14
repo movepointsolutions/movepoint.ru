@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -5,7 +6,18 @@
 #include <sw/redis++/redis++.h>
 #include "redis.h"
 
+const std::string url = "tcp://127.0.0.1:6379";
 const std::string key = "movepoint.ru:comments";
+
+static auto get_redis()
+{
+    auto ret = sw::redis::Redis(url);
+    std::ifstream pwd("pwd");
+    std::string pass;
+    pwd >> pass;
+    ret.auth(pass);
+    return ret;
+}
 
 static std::string escape(const std::string &str)
 {
@@ -48,19 +60,19 @@ static std::string limit(std::string str, size_t size)
 
 void Redis::hit()
 {
-	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	auto redis = get_redis();
 	redis.incr("movepoint.ru:hits");
 }
 
 long long Redis::hits()
 {
-	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	auto redis = get_redis();
 	return redis.command<long long>("get", "movepoint.ru:hits");
 }
 
 std::string Redis::status()
 {
-	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	auto redis = get_redis();
 	std::vector<std::string> statuses;
 	redis.lrange("movepoint.ru:status", -1, -1, std::back_inserter(statuses));
 	std::ostringstream ret;
@@ -71,7 +83,7 @@ std::string Redis::status()
 
 void Redis::leave_comment(const std::string &nickname, const std::string &text)
 {
-	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	auto redis = get_redis();
 	//std::cerr << "Nickname: " << nickname << std::endl;
 	//std::cerr << "Text: " << text << std::endl;
 	redis.rpush(key, nickname + "\n" + text);
@@ -80,7 +92,7 @@ void Redis::leave_comment(const std::string &nickname, const std::string &text)
 static std::string comments(const char *key)
 {
 	//std::cerr << "Fetching comments" << std::endl;
-	auto redis = sw::redis::Redis("tcp://127.0.0.1:6379");
+	auto redis = get_redis();
 	std::ostringstream ret;
 	std::vector<std::string> elements;
 	//std::cerr << "Comments: " << elements.size() << std::endl;
