@@ -10,7 +10,7 @@ run: movepoint
 	#g++ -o $@ -std=c++17 -I/home/anek/www/boost `pkg-config --cflags --libs redis++` movepoint.cpp index.cpp redis.cpp -L/home/anek/www/boost/stage/lib -pthread -lboost_system -lboost_context -lboost_url
 
 movepoint: movepoint.o index.o redis.o season1.o season2.o season3.o engine.o snippet.o
-	g++ -o $@ `pkg-config --libs redis++` -L/home/anek/www/boost/stage/lib -lboost_system -lboost_context -lboost_url -lredis-cpp -lpthread $^
+	g++ -o $@ `pkg-config --libs redis++` -L/home/anek/www/boost/stage/lib -lboost_system -lboost_context -lboost_url -lpthread $^
 
 movepoint.o: movepoint.cpp index.h redis.h Makefile
 	g++ -c -o $@ -I/home/anek/www/boost movepoint.cpp -pthread
