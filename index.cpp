@@ -51,7 +51,7 @@ std::string Index::content() const
 	    season3.innerhtml("Season 3");
 	    seasons.innerhtml(season1.content() + season2.content() + season3.content());
     }
-    seasons.push_attr("class", "hidden");
+    //seasons.push_attr("class", "hidden");
     container1.innerhtml(comments.content() + seasons.content() + redis.comments() + s_commenttoo.content());
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
