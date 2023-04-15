@@ -7,7 +7,7 @@ pkg_search_module(REDIS REQUIRED redis++)
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.68 REQUIRED COMPONENTS system context url)
+find_package(Boost 1.68 REQUIRED COMPONENTS coroutine system context url)
 
 add_executable(movepoint
 	engine.cpp

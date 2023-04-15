@@ -64,7 +64,13 @@ static std::string limit(std::string str, size_t size)
 void Redis::hit()
 {
 	auto redis = get_redis();
-	redis.incr("movepoint.ru:hits");
+	std::cerr << "HIT..." << std::endl;
+    try {
+	    redis.incr("movepoint.ru:hits");
+    } catch (...) {
+    	std::cerr << "Can't record hit" << std::endl;
+        //throw;
+    }
 }
 
 long long Redis::hits()

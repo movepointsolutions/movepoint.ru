@@ -181,21 +181,23 @@ handle_request(
         auto request_body = req.body();
         auto url="http://post.data/?" + request_body;
         urls::url_view uv(url);
-	auto pv = uv.params();
-	for (auto p : pv) {
-		if (p.key == "nickname")
-			nickname = p.value;
-		else if (p.key == "text")
-			text = p.value;
-	}
+        auto pv = uv.params();
+        for (auto p : pv) {
+            if (p.key == "nickname")
+                nickname = p.value;
+            else if (p.key == "text")
+                text = p.value;
+        }
 
-	if (nickname.empty() || nickname.find('\n') != std::string::npos)
-		return bad_request("Invalid nickname");
+        if (nickname.empty() || nickname.find('\n') != std::string::npos)
+            return bad_request("Invalid nickname");
 
-        static Redis redis;
-	//
-	//if (nickname == "test" && text == "test")
-	redis.leave_comment(nickname, text);
+        try {
+            static Redis redis;
+            redis.leave_comment(nickname, text);
+        } catch (std::exception &exc) {
+            return server_error(exc.what());
+        }
     }
 
     if (path == "/var/www/movepoint.ru/index.html") {
@@ -211,7 +213,12 @@ handle_request(
 
         // Respond to GET/POST request
         static Index index;
-        std::string body(index.content());
+        std::string body;
+        try {
+            body = std::move(index.content());
+        } catch (std::exception &exc) {
+            return server_error(exc.what());
+        }
 
         http::response<http::string_body> res;
         res.result(http::status::ok);
@@ -446,17 +453,15 @@ do_listen(
                         &do_session,
                         beast::tcp_stream(std::move(socket)),
                         doc_root,
-                        std::placeholders::_1),
-                    // we ignore the result of the session,
-                    // most errors are handled with error_code
-                    boost::asio::detached);
+                        std::placeholders::_1)
+                    );
     }
 }
 
 int main(int argc, char* argv[])
 {
     // Check command line arguments.
-    if (argc != 3)
+    if (argc != 1)
     {
         std::cerr <<
             "Usage: movepoint <address> <port> <doc_root> <threads>\n" <<
@@ -464,33 +469,36 @@ int main(int argc, char* argv[])
             "    movepoint 0.0.0.0 8080\n";
         return EXIT_FAILURE;
     }
-    auto const address = net::ip::make_address(argv[1]);
-    auto const port = static_cast<unsigned short>(std::atoi(argv[2]));
+    auto const address = net::ip::make_address("127.0.0.1");
+    auto const port = static_cast<unsigned short>(std::atoi("8080"));
     auto const doc_root = std::make_shared<std::string>("/var/www/movepoint.ru/");
-    auto const threads = 4;
+    auto const threads = 1;
 
     // The io_context is required for all I/O
     net::io_context ioc{threads};
 
-    // Spawn a listening port
-    boost::asio::spawn(ioc,
-            std::bind(
+    auto listen = std::bind(
                 &do_listen,
                 std::ref(ioc),
                 tcp::endpoint{address, port},
                 doc_root,
-                std::placeholders::_1),
-            // on completion, spawn will call this function
-            [](std::exception_ptr ex)
+                std::placeholders::_1);
+
+    auto handler = [](std::exception_ptr ex)
             {
-            // if an exception occurred in the coroutine,
-            // it's something critical, e.g. out of memory
-            // we capture normal errors in the ec
-            // so we just rethrow the exception here,
-            // which will cause `ioc.run()` to throw
-            if (ex)
-            std::rethrow_exception(ex);
-            });
+                // if an exception occurred in the coroutine,
+                // it's something critical, e.g. out of memory
+                // we capture normal errors in the ec
+                // so we just rethrow the exception here,
+                // which will cause `ioc.run()` to throw
+                if (ex) {
+                    std::cerr << "EXC" << std::endl;
+                    std::rethrow_exception(ex);
+                }
+            };
+
+    // Spawn a listening port
+    boost::asio::spawn(ioc, listen, handler);
 
     auto run = [&ioc]
                 {

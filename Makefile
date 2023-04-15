@@ -4,7 +4,7 @@ default: run_gdb
 	#LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib ./movepoint_g 127.0.0.1 8080
 
 run_gdb: movepoint
-	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib gdb ./movepoint 127.0.0.1 8080
+	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib gdb ./movepoint
 
 run: movepoint
 	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib ./movepoint 127.0.0.1 8080 2>&1 | tee -a log
