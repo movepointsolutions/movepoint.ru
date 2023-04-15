@@ -492,16 +492,21 @@ int main(int argc, char* argv[])
             std::rethrow_exception(ex);
             });
 
+    auto run = [&ioc]
+                {
+                try
+		{
+			ioc.run();
+		} catch (const std::exception &ex) {
+			std::cerr << ex.what() << std::endl;
+		}
+                };
     // Run the I/O service on the requested number of threads
     std::vector<std::thread> v;
     v.reserve(threads - 1);
     for(auto i = threads - 1; i > 0; --i)
-        v.emplace_back(
-                [&ioc]
-                {
-                ioc.run();
-                });
-    ioc.run();
+        v.emplace_back(run);
+    run();
 
     return EXIT_SUCCESS;
 }

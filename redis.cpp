@@ -14,8 +14,11 @@ static auto get_redis()
     auto ret = sw::redis::Redis(url);
     std::ifstream pwd("pwd");
     std::string pass;
-    pwd >> pass;
-    ret.auth(pass);
+    if (pwd >> pass) {
+	    std::cerr << "AUTH..." << std::endl;
+	    ret.auth(pass);
+	    std::cerr << "AUTH OK?" << std::endl;
+    }
     return ret;
 }
 

@@ -6,3 +6,6 @@ falconboard/
 movepoint
 redis-plus-plus/
 log
+pwd
+Debug
+Release
