@@ -14,6 +14,7 @@ find_package(Threads REQUIRED)
 
 add_executable(movepoint
 	engine.cpp
+    comment.cpp
 	index.cpp
 	movepoint.cpp
 	redis.cpp

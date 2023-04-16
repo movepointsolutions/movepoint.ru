@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -17,7 +18,7 @@ static auto get_redis()
     if (pwd >> pass) {
 	    std::cerr << "AUTH..." << std::endl;
 	    ret.auth(pass);
-	    std::cerr << "AUTH OK?" << std::endl;
+	    std::cerr << "AUTH OK" << std::endl;
     }
     return ret;
 }
@@ -98,36 +99,25 @@ void Redis::leave_comment(const std::string &nickname, const std::string &text)
 	redis.rpush(key, nickname + "\n" + text);
 }
 
+static void comments(const char *key, std::function<void (const Comment &)> fun)
+{
+	auto redis = get_redis();
+    std::vector<std::string> elements;
+	redis.lrange(key, 0, -1, std::back_inserter(elements));
+    for (const auto &str : elements) {
+        Comment c;
+        std::istringstream s(str);
+        s >> c;
+        fun(c);
+    };
+}
+
 static std::string comments(const char *key)
 {
-	//std::cerr << "Fetching comments" << std::endl;
-	auto redis = get_redis();
-	std::ostringstream ret;
-	std::vector<std::string> elements;
-	//std::cerr << "Comments: " << elements.size() << std::endl;
-	redis.lrange(key, 0, -1, std::back_inserter(elements));
-	//std::cerr << "Comments: " << elements.size() << std::endl;
-	for (auto element : elements) {
-		std::ostringstream comment;
-		const char *n = element.c_str();
-		const char *c = n;
-		int count = 0;
-		while (*c && *c != '\n')
-			c++;
-		std::string nickname(n, c);
-		std::string text(++c);
-		std::string indent = "  ";
-		nickname = escape(nickname);
-		text = escape(text);
-		nickname = limit(nickname, 64);
-		text = limit(text, 16384);
-		comment << indent << "<article class=\"comment\"><pre>" << std::endl;
-		comment << indent << " <h4>" << nickname << "</h4>" << std::endl;
-		comment << indent << " <i>" << text << "</i>" << std::endl;
-		comment << indent << "</pre></article>" << std::endl;
-		ret << comment.str();
-	}
-	return ret.str();
+    std::ostringstream s;
+    auto f = [&s](const Comment &c) { s << c; };
+    comments(key, f);
+    return s.str();
 }
 
 std::string Redis::comments()
