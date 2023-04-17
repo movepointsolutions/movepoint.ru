@@ -94,29 +94,26 @@ std::string Redis::status()
 void Redis::leave_comment(const std::string &nickname, const std::string &text)
 {
 	auto redis = get_redis();
-	//std::cerr << "Nickname: " << nickname << std::endl;
-	//std::cerr << "Text: " << text << std::endl;
 	redis.rpush(key, nickname + "\n" + text);
-}
-
-static void comments(const char *key, std::function<void (const Comment &)> fun)
-{
-	auto redis = get_redis();
-    std::vector<std::string> elements;
-	redis.lrange(key, 0, -1, std::back_inserter(elements));
-    for (const auto &str : elements) {
-        Comment c;
-        std::istringstream s(str);
-        s >> c;
-        fun(c);
-    };
 }
 
 static std::string comments(const char *key)
 {
+    //TODO: optimize&cleanup
+	auto redis = get_redis();
+    std::vector<std::string> elements;
+	redis.lrange(key, 0, -1, std::back_inserter(elements));
+
+    std::vector<Comment> comments;
+    for (const auto &str : elements) {
+        Comment c;
+        std::istringstream s(str);
+        s >> c;
+        comments.push_back(c);
+    }
+
     std::ostringstream s;
-    auto f = [&s](const Comment &c) { s << c; };
-    comments(key, f);
+    std::copy(comments.begin(), comments.end(), std::ostream_iterator<Comment>(s));
     return s.str();
 }
 
