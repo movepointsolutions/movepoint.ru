@@ -472,7 +472,7 @@ int main(int argc, char* argv[])
     auto const address = net::ip::make_address("127.0.0.1");
     auto const port = static_cast<unsigned short>(std::atoi("8080"));
     auto const doc_root = std::make_shared<std::string>("/var/www/movepoint.ru/");
-    auto const threads = 1;
+    auto const threads = 4;
 
     // The io_context is required for all I/O
     net::io_context ioc{threads};
