@@ -300,6 +300,30 @@ handle_request(
         res.content_length(body.size());
         res.keep_alive(req.keep_alive());
         return res;
+    } else if (path == "/var/www/movepoint.ru/season4.html") {
+        // Respond to HEAD request
+        if(req.method() == http::verb::head)
+        {
+            http::response<http::empty_body> res{http::status::ok, req.version()};
+            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+            res.set(http::field::content_type, mime_type(path));
+            res.keep_alive(req.keep_alive());
+            return res;
+        }
+
+        // Respond to GET/POST request
+        static Season season("season4");
+        std::string body(season.content());
+
+        http::response<http::string_body> res;
+        res.result(http::status::ok);
+        res.version(req.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, mime_type(path));
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(req.keep_alive());
+        return res;
     } else {
         // Body to be returned
         http::file_body::value_type body;
