@@ -8,7 +8,6 @@
 #include "redis.h"
 
 const std::string url = "tcp://127.0.0.1:6379";
-const std::string key = "movepoint.ru:comments";
 
 static auto get_redis()
 {
@@ -89,40 +88,4 @@ std::string Redis::status()
 	for (const auto &s : statuses)
 		ret << escape(s);
 	return ret.str();
-}
-
-void Redis::leave_comment(const std::string &nickname, const std::string &text)
-{
-	auto redis = get_redis();
-	redis.rpush(key, nickname + "\n" + text);
-}
-
-static std::string comments(const char *key)
-{
-    //TODO: optimize&cleanup
-	auto redis = get_redis();
-    std::vector<std::string> elements;
-	redis.lrange(key, 0, -1, std::back_inserter(elements));
-
-    std::vector<Comment> comments;
-    for (const auto &str : elements) {
-        Comment c;
-        std::istringstream s(str);
-        s >> c;
-        comments.push_back(c);
-    }
-
-    std::ostringstream s;
-    std::copy(comments.begin(), comments.end(), std::ostream_iterator<Comment>(s));
-    return s.str();
-}
-
-std::string Redis::comments()
-{
-	return ::comments(key.c_str());
-}
-
-std::string Redis::archive(const char *key)
-{
-	return ::comments(key);
 }

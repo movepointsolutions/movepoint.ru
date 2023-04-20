@@ -1,6 +1,7 @@
 mithril/
 boost/
 *.o
+*.swp
 movepoint_g
 falconboard/
 movepoint

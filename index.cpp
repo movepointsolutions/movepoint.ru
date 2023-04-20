@@ -3,6 +3,7 @@
 #include "index.h"
 #include "track.h"
 #include "engine.h"
+#include "comments.h"
 
 using namespace std::string_literals;
 
@@ -36,8 +37,8 @@ std::string Index::content() const
     container.push_attr("class", "container");
     tags::div container1;
     container1.push_attr("class", "container col-md-8");
-    tags::h2 comments;
-    comments.innerhtml("Комментарии"s);
+    tags::h2 comments_header;
+    comments_header.innerhtml("Комментарии"s);
     tags::p seasons;
     {
 	    tags::a season1;
@@ -52,7 +53,8 @@ std::string Index::content() const
 	    seasons.innerhtml(season1.content() + season2.content() + season3.content());
     }
     //seasons.push_attr("class", "hidden");
-    container1.innerhtml(comments.content() + seasons.content() + redis.comments() + s_commenttoo.content());
+    Comments comments;
+    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + s_commenttoo.content());
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
     container2.innerhtml(s_lina.content());

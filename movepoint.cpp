@@ -31,8 +31,7 @@
 #include <vector>
 #include "index.h"
 #include "season1.h"
-#include "season2.h"
-#include "season3.h"
+#include "comments.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -193,8 +192,8 @@ handle_request(
             return bad_request("Invalid nickname");
 
         try {
-            static Redis redis;
-            redis.leave_comment(nickname, text);
+            static Comments comments;
+            comments.add(nickname, text);
         } catch (std::exception &exc) {
             return server_error(exc.what());
         }
@@ -241,8 +240,8 @@ handle_request(
         }
 
         // Respond to GET/POST request
-        static Season1 season1;
-        std::string body(season1.content());
+        static Season season("season1");
+        std::string body(season.content());
 
         http::response<http::string_body> res;
         res.result(http::status::ok);
@@ -265,8 +264,8 @@ handle_request(
         }
 
         // Respond to GET/POST request
-        static Season2 season2;
-        std::string body(season2.content());
+        static Season season("season2");
+        std::string body(season.content());
 
         http::response<http::string_body> res;
         res.result(http::status::ok);
@@ -289,8 +288,8 @@ handle_request(
         }
 
         // Respond to GET/POST request
-        static Season3 season3;
-        std::string body(season3.content());
+        static Season season("season3");
+        std::string body(season.content());
 
         http::response<http::string_body> res;
         res.result(http::status::ok);

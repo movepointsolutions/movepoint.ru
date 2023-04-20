@@ -3,34 +3,36 @@
 #include "season1.h"
 #include "track.h"
 #include "engine.h"
+#include "comments.h"
 
 using namespace std::string_literals;
 
-Season1::Season1()
-    : fhead("head.htm")
-    , findex("index.html")
-    , farchive("season1.html")
-    , ftail("tail.htm")
+Season::Season(const std::string &_key)
+    : key(_key)
+    , fhead("head.htm")
 {
     thead << fhead.rdbuf();
-    tindex << findex.rdbuf();
-    tarchive << farchive.rdbuf();
-    ttail << ftail.rdbuf();
 }
 
-std::string Season1::content() const
+std::string Season::content() const
 {
     Redis redis;
     redis.hit();
-    auto archive = redis.archive("movepoint.ru:season1");
+    Comments comments;
+    const std::string k = "movepoint.ru:" + key;
+    auto archive = comments.content(k.c_str());
     auto doctype = "<!DOCTYPE html>"s;
     tags::html html;
     html.push_attr("lang", "ru");
     tags::head head;
     head.innerhtml(thead.str());
     tags::body body;
-    auto bodyhtml = tindex.str() + tarchive.str() + archive + ttail.str();
-    body.innerhtml(bodyhtml);
+    tags::div container;
+    container.push_attr("class", "container");
+    tags::h2 h2;
+    h2.innerhtml("Comments (" + key + ")");
+    container.innerhtml(h2.content() + archive);
+    body.innerhtml(container.content());
     html.innerhtml(head.content() + body.content());
     return doctype + html.content();
 }

@@ -19,8 +19,7 @@ add_executable(movepoint
 	movepoint.cpp
 	redis.cpp
 	season1.cpp
-	season2.cpp
-	season3.cpp
+    comments.cpp
 	snippet.cpp
 )
 

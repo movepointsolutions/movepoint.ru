@@ -6,19 +6,14 @@
 #include <string>
 #include "redis.h"
 
-class Season1
+class Season
 {
+    std::string key;
     std::ifstream fhead;
-    std::ifstream findex;
-    std::ifstream farchive;
-    std::ifstream ftail;
     std::ostringstream thead;
-    std::ostringstream tindex;
-    std::ostringstream tarchive;
-    std::ostringstream ttail;
 
 public:
-    Season1();
+    Season(const std::string &_key);
     std::string content() const;
 };
 
