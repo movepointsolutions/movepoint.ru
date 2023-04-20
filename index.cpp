@@ -50,7 +50,13 @@ std::string Index::content() const
 	    tags::a season3;
 	    season3.push_attr("href", "/season3.html");
 	    season3.innerhtml("Season 3");
-	    seasons.innerhtml(season1.content() + season2.content() + season3.content());
+	    tags::a season4;
+	    season4.push_attr("href", "/season4.html");
+	    season4.innerhtml("Season 4");
+	    seasons.innerhtml(season1.content()
+                         + season2.content()
+                         + season3.content()
+                         + season4.content());
     }
     //seasons.push_attr("class", "hidden");
     Comments comments;
