@@ -72,7 +72,7 @@ std::string Index::content() const
     status.innerhtml(redis.status() + " edition");
     header.innerhtml(s_header.content() + status.content());
     auto bodyhtml = header.content() + s_index.content() + s_rutracker.content()
-	            + container.content() + script.content() + s_tail.content();
+	            + container.content() + script.content(); //+ s_tail.content();
     tags::div outer_container;
     outer_container.push_attr("class", "container");
     outer_container.innerhtml(bodyhtml);

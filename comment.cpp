@@ -1,5 +1,6 @@
 #include <sstream>
 #include "comment.h"
+#include "engine.h"
 
 static std::string escape(const std::string &str)
 {
@@ -53,10 +54,14 @@ std::istream &operator >>(std::istream &stream, Comment &comment)
 
 std::ostream &operator <<(std::ostream &stream, const Comment &comment)
 {
-    const std::string indent = "  ";
-    stream << indent << "<article class=\"comment\"><pre>" << std::endl;
-    stream << indent << " <h4>" << comment.nickname << "</h4>" << std::endl;
-    stream << indent << " <i>" << comment.text << "</i>" << std::endl;
-    stream << indent << "</pre></article>" << std::endl;
-    return stream;
+    tags::article article;
+    article.push_attr("class", "comment");
+    tags::h4 h4;
+    h4.innerhtml(comment.nickname);
+    tags::pre pre;
+    tags::i i;
+    i.innerhtml(comment.text);
+    pre.innerhtml(i.content());
+    article.innerhtml(h4.content() + pre.content());
+    return stream << article.content() << std::endl;
 }
