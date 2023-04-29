@@ -21,6 +21,7 @@ add_executable(movepoint
 	season.cpp
     comments.cpp
 	snippet.cpp
+    handler.cpp
 )
 
 set_property(TARGET movepoint PROPERTY CXX_STANDARD 20)
