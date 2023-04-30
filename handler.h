@@ -2,12 +2,6 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/detached.hpp>
-#include <boost/asio/spawn.hpp>
-#include <boost/asio/buffer.hpp>
-#include <boost/url.hpp>
-#include <boost/config.hpp>
 
 class request_handler
 {

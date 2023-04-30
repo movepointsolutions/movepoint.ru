@@ -13,15 +13,10 @@
 //
 //------------------------------------------------------------------------------
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/detached.hpp>
 #include <boost/asio/spawn.hpp>
 #include <boost/asio/buffer.hpp>
-#include <boost/url.hpp>
-#include <boost/config.hpp>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
@@ -34,7 +29,6 @@
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
-namespace urls = boost::urls;           // from <boost/url.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 

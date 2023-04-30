@@ -1,3 +1,4 @@
+#include <boost/url.hpp>
 #include "handler.h"
 #include "index.h"
 #include "season.h"
@@ -49,6 +50,7 @@ mime_type(beast::string_view path)
     if(iequals(ext, ".tif"))  return "image/tiff";
     if(iequals(ext, ".svg"))  return "image/svg+xml";
     if(iequals(ext, ".svgz")) return "image/svg+xml";
+    if(iequals(ext, ".ogg"))  return "audio/ogg";
     return "application/text";
 }
 
@@ -155,7 +157,18 @@ message_generator request_handler::post_root()
     try {
         static Comments comments;
         comments.add(nickname, text);
-        return get_root();
+
+        std::string body = "you successfully posted";
+        http::response<http::string_body> res;
+        res.result(http::status::see_other);
+        res.version(request.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.set(http::field::location, "/");
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(request.keep_alive());
+        return res;
     } catch (std::exception &exc) {
         return server_error(exc.what());
     }
