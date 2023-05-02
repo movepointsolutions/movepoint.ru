@@ -79,6 +79,12 @@ long long Redis::hits()
 	return redis.command<long long>("get", "movepoint.ru:hits");
 }
 
+long long Redis::new_session()
+{
+	auto redis = get_redis();
+	return redis.command<long long>("incr", "movepoint.ru:session");
+}
+
 std::string Redis::status()
 {
 	auto redis = get_redis();

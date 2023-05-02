@@ -1,6 +1,7 @@
 #include <boost/url.hpp>
 #include "handler.h"
 #include "index.h"
+#include "redis.h"
 #include "season.h"
 #include "comments.h"
 
@@ -59,7 +60,7 @@ message_generator request_handler::empty_body(beast::string_view target)
     return res;
 }
 
-message_generator request_handler::get_root()
+message_generator request_handler::get_root(bool new_session)
 {
     static Index index;
     std::string body;
@@ -74,6 +75,13 @@ message_generator request_handler::get_root()
     res.version(request.version());
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
     res.set(http::field::content_type, "text/html");
+    if (new_session) {
+        static Redis redis;
+        std::ostringstream cookie;
+        cookie << "session=" << redis.new_session();
+        std::cerr << "Set " << cookie.str() << std::endl;
+        res.set(http::field::set_cookie, cookie.str());
+    }
     res.body() = body;
     res.content_length(body.size());
     res.keep_alive(request.keep_alive());
@@ -153,12 +161,16 @@ message_generator request_handler::response()
         return bad_request("Illegal request-target");
 
     
-    std::cerr << request.method() << " " << target << " " << forwarded << std::endl;
+    std::cerr << request.method() << " " << target << " " << forwarded << " " << cookie << std::endl;
 
+    bool have_session = cookie.find("session") != std::string::npos;
     if (target == "/" && method == http::verb::get) {
-        return get_root();
+        return get_root(!have_session);
     } else if (target == "/" && method == http::verb::post) {
-        return post_root();
+        if (cookie.find("guest") != std::string::npos || have_session)
+            return post_root();
+        else
+            return bad_request("you must accept cookies");
     }
 
     if (target == "/season1.html" && method == http::verb::get) {

@@ -10,6 +10,7 @@ class Redis
 public:
 	void hit();
 	long long hits();
+	long long new_session();
 	std::string status();
 };
 
