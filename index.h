@@ -11,7 +11,6 @@ class Index
     snippet s_index;
     snippet s_archive;
     snippet s_commenttoo;
-    snippet s_lina;
     snippet s_tail;
     snippet s_script;
     snippet s_style;

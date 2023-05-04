@@ -15,3 +15,4 @@ TAG(i);
 TAG(article);
 TAG(style);
 TAG(header);
+TAG(img);

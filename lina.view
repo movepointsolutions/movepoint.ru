@@ -1,0 +1,21 @@
+auto lina_view = [](){
+    tags::a a1;
+    {
+        a1.push_attr("href", "/login.html");
+        tags::img img;
+        img.push_attr("alt", "Lina the Dark Elf");
+        img.push_attr("src", "/static/teenager_lina_sticker.png");
+        a1.innerhtml(img.content());
+    }
+    tags::a a2;
+    {
+        a2.push_attr("href", "https://creativecommons.org/licenses/by-nc/4.0/");
+        tags::img img;
+        img.push_attr("alt", "CC BY-NC");
+        img.push_attr("src", "/static/by-nc.png");
+        a2.innerhtml(img.content());
+    }
+    return a1.content() + a2.content();
+};
+
+// vim: syntax=cpp
