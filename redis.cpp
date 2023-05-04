@@ -9,15 +9,14 @@
 
 const std::string url = "tcp://127.0.0.1:6379";
 
-static auto get_redis()
+sw::redis::Redis get_redis()
 {
     auto ret = sw::redis::Redis(url);
     std::ifstream pwd("pwd");
     std::string pass;
     if (pwd >> pass) {
-	    std::cerr << "AUTH..." << std::endl;
 	    ret.auth(pass);
-	    std::cerr << "AUTH OK" << std::endl;
+	    std::cerr << "AUTH_OK" << std::endl;
     }
     return ret;
 }
@@ -94,4 +93,13 @@ std::string Redis::status()
 	for (const auto &s : statuses)
 		ret << escape(s);
 	return ret.str();
+}
+
+std::vector<std::string> Redis::spamlist()
+{
+	auto redis = get_redis();
+    const char *key = "spamlist";
+    std::vector<std::string> ret;
+	redis.lrange(key, 0, -1, std::back_inserter(ret));
+    return ret;
 }

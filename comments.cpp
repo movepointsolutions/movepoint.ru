@@ -2,25 +2,11 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-#include <sw/redis++/redis++.h>
 #include "comment.h"
 #include "comments.h"
+#include "redis.h"
 
-const std::string url = "tcp://127.0.0.1:6379";
 const char *comments_key = "movepoint.ru:comments";
-
-static auto get_redis()
-{
-    auto ret = sw::redis::Redis(url);
-    std::ifstream pwd("pwd");
-    std::string pass;
-    if (pwd >> pass) {
-	    std::cerr << "AUTH..." << std::endl;
-	    ret.auth(pass);
-	    std::cerr << "AUTH OK" << std::endl;
-    }
-    return ret;
-}
 
 std::string Comments::content(const char *key)
 {

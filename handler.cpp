@@ -108,8 +108,15 @@ message_generator request_handler::post_root()
         return bad_request("Invalid nickname");
 
     try {
+        static Redis redis;
         static Comments comments;
+        auto spamlist = redis.spamlist();
+        for (const auto &s : spamlist) {
+            if (text.find(s) != std::string::npos)
+                return server_error("spam detected");
+        }
         comments.add(nickname, text);
+        std::cerr << nickname << " posted" << std::endl;
 
         std::string body = "you successfully posted";
         http::response<http::string_body> res;
