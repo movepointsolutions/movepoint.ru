@@ -12,3 +12,4 @@ login_salt
 Debug
 Release
 build
+build-clang/

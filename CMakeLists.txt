@@ -22,6 +22,8 @@ add_executable(movepoint
     comments.cpp
 	snippet.cpp
     handler.cpp
+    sha1/sha1.c
+    session_manager.cpp
 )
 
 set_property(TARGET movepoint PROPERTY CXX_STANDARD 20)

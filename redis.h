@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+#include <utility>
 #include <sw/redis++/redis++.h>
 #include "comment.h"
 
@@ -13,7 +14,8 @@ class Redis
 public:
 	void hit();
 	long long hits();
-	long long new_session();
+	std::pair<long long, std::string> new_session();
+    std::string session_hash(long long);
 	std::string status();
     std::vector<std::string> spamlist();
 };
