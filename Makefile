@@ -1,3 +1,6 @@
+run-clang: build/movepoint
+	build-clang/movepoint 2>&1 | tee -a log
+
 run: build/movepoint
 	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib build/movepoint 2>&1 | tee -a log
 

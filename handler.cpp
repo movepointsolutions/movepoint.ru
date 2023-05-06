@@ -48,6 +48,7 @@ message_generator request_handler::server_error(beast::string_view what)
     res.set(http::field::content_type, "text/html");
     res.keep_alive(request.keep_alive());
     res.body() = "An error occurred: '" + std::string(what) + "'";
+    std::cerr << "SERVER_ERROR " << std::string(what) << std::endl;
     res.prepare_payload();
     return res;
 };
@@ -56,6 +57,15 @@ message_generator request_handler::empty_body(beast::string_view target)
 {
     http::response<http::empty_body> res{http::status::ok, request.version()};
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res.keep_alive(request.keep_alive());
+    return res;
+}
+
+message_generator request_handler::wiki()
+{
+    http::response<http::empty_body> res{http::status::see_other, request.version()};
+    res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res.set(http::field::location, "https://wikireality.ru/wiki/Lina_the_Dark_Elf");
     res.keep_alive(request.keep_alive());
     return res;
 }
@@ -201,6 +211,12 @@ message_generator request_handler::response()
     if (target == "/season4.html" && method == http::verb::get) {
         return get_season("season4");
     } else if (target == "/season4.html" && method == http::verb::post) {
+        return empty_body(target);
+    }
+
+    if (target == "/login.html" && method == http::verb::get) {
+        return wiki();
+    } else if (target == "/login.html" && method == http::verb::post) {
         return empty_body(target);
     }
 
