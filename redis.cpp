@@ -18,7 +18,7 @@ sw::redis::Redis get_redis()
     std::string pass;
     if (pwd >> pass) {
 	    ret.auth(pass);
-	    std::cerr << "AUTH_OK" << std::endl;
+	    //std::cerr << "AUTH_OK" << std::endl;
     }
     return ret;
 }
@@ -65,7 +65,7 @@ static std::string limit(std::string str, size_t size)
 void Redis::hit()
 {
 	auto redis = get_redis();
-	std::cerr << "HIT..." << std::endl;
+	//std::cerr << "HIT..." << std::endl;
     try {
 	    redis.incr("movepoint.ru:hits");
     } catch (...) {
@@ -86,7 +86,19 @@ std::pair<long long, std::string> Redis::new_session()
 	auto session = redis.command<long long>("incr", "movepoint.ru:session");
     static session_manager sm;
     auto shash = sm.get_sessionhash(session);
+    session_hash(session, shash);
     return std::make_pair(session, shash);
+}
+
+void Redis::session_hash(long long session, std::string sessionhash)
+{
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::ostringstream K;
+    K << "movepoint.ru:session:" << session << ":hash";
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::string key{K.str()};
+	auto redis = get_redis();
+	redis.set(key, sessionhash);
 }
 
 std::string Redis::session_hash(long long session)
@@ -97,7 +109,11 @@ std::string Redis::session_hash(long long session)
     //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::string key{K.str()};
 	auto redis = get_redis();
-	return redis.command<std::string>("get", key);
+	auto v = redis.get(key);
+    if (v.has_value())
+        return v.value();
+    else
+        return std::string();
 }
 
 std::string Redis::status()

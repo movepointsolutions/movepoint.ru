@@ -1,3 +1,5 @@
+#include <sstream>
+#include <string>
 #include <boost/url.hpp>
 #include "handler.h"
 #include "index.h"
@@ -70,7 +72,7 @@ message_generator request_handler::wiki()
     return res;
 }
 
-message_generator request_handler::get_root(bool new_session)
+message_generator request_handler::get_root(long long session)
 {
     static Index index;
     std::string body;
@@ -85,7 +87,7 @@ message_generator request_handler::get_root(bool new_session)
     res.version(request.version());
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
     res.set(http::field::content_type, "text/html");
-    if (new_session) {
+    if (session < 0) {
         static Redis redis;
         std::ostringstream cookie1, cookie2;
         std::pair<long long, std::string> session{redis.new_session()};
@@ -93,7 +95,7 @@ message_generator request_handler::get_root(bool new_session)
         cookie2 << "session_hash=" << session.second;
         std::cerr << "Set " << cookie1.str() << std::endl;
         res.set(http::field::set_cookie, cookie1.str());
-        res.set(http::field::set_cookie, cookie2.str());
+        res.insert(http::field::set_cookie, cookie2.str());
     }
     res.body() = body;
     res.content_length(body.size());
@@ -101,7 +103,7 @@ message_generator request_handler::get_root(bool new_session)
     return res;
 }
 
-message_generator request_handler::post_root()
+message_generator request_handler::post_root(long long session)
 {
     std::string nickname;
     std::string text;
@@ -181,18 +183,47 @@ message_generator request_handler::response()
         return bad_request("Illegal request-target");
 
     
-    std::cerr << request.method() << " " << target << " " << forwarded << " " << cookie << std::endl;
-
     bool have_session = cookie.find("session_hash") != std::string::npos;
+    long long session = -1;
+    std::string session_hash;
     if (have_session) {
         // Validate session
+        std::istringstream C(cookie);
+        std::string c;
+        while (C >> c) {
+            if (c.back() == ';')
+                c.pop_back();
+            auto eq = c.find('=');
+            if (eq != std::string::npos) {
+                std::string k(c, 0, eq);
+                std::string v(c, eq + 1, c.size() - eq);
+                if (k == "session") {
+                    std::istringstream V(v);
+                    V >> session;
+                } else if (k == "session_hash")
+                    session_hash = v;
+            }
+        }
+
+        static Redis redis;
+        auto valid_sessionhash = redis.session_hash(session);
+        if (session >= 0)
+            have_session = have_session && (session_hash == valid_sessionhash);
+        else
+            have_session = false;
     }
 
+    if (!have_session)
+        session = -1;
+
+    std::cerr << request.method() << " " << target << " " << forwarded << " session=" << session << std::endl;
+    //std::cerr << "Cookie: " << cookie << std::endl;
+
     if (target == "/" && method == http::verb::get) {
-        return get_root(!have_session);
+        return get_root(session);
     } else if (target == "/" && method == http::verb::post) {
         if (have_session)
-            return post_root();
+            return post_root(session);
         else
             return bad_request("you must accept cookies");
     }

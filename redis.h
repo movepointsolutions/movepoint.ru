@@ -15,6 +15,7 @@ public:
 	void hit();
 	long long hits();
 	std::pair<long long, std::string> new_session();
+    void session_hash(long long session, std::string sessionhash);
     std::string session_hash(long long);
 	std::string status();
     std::vector<std::string> spamlist();
