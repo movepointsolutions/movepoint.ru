@@ -67,7 +67,8 @@ message_generator request_handler::wiki()
 {
     http::response<http::empty_body> res{http::status::see_other, request.version()};
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-    res.set(http::field::location, "https://wikireality.ru/wiki/Lina_the_Dark_Elf");
+    const auto wiki_link = "https://wikireality.ru/wiki/Lina_the_Dark_Elf";
+    res.set(http::field::location, wiki_link);
     res.keep_alive(request.keep_alive());
     return res;
 }
