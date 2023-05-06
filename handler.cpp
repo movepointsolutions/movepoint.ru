@@ -87,10 +87,13 @@ message_generator request_handler::get_root(bool new_session)
     res.set(http::field::content_type, "text/html");
     if (new_session) {
         static Redis redis;
-        std::ostringstream cookie;
-        cookie << "session=" << redis.new_session();
-        std::cerr << "Set " << cookie.str() << std::endl;
-        res.set(http::field::set_cookie, cookie.str());
+        std::ostringstream cookie1, cookie2;
+        std::pair<long long, std::string> session{redis.new_session()};
+        cookie1 << "session=" << session.first;
+        cookie2 << "session_hash=" << session.second;
+        std::cerr << "Set " << cookie1.str() << std::endl;
+        res.set(http::field::set_cookie, cookie1.str());
+        res.set(http::field::set_cookie, cookie2.str());
     }
     res.body() = body;
     res.content_length(body.size());
@@ -180,11 +183,15 @@ message_generator request_handler::response()
     
     std::cerr << request.method() << " " << target << " " << forwarded << " " << cookie << std::endl;
 
-    bool have_session = cookie.find("session") != std::string::npos;
+    bool have_session = cookie.find("session_hash") != std::string::npos;
+    if (have_session) {
+        // Validate session
+    }
+
     if (target == "/" && method == http::verb::get) {
         return get_root(!have_session);
     } else if (target == "/" && method == http::verb::post) {
-        if (cookie.find("guest") != std::string::npos || have_session)
+        if (have_session)
             return post_root();
         else
             return bad_request("you must accept cookies");

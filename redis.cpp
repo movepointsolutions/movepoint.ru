@@ -1,3 +1,4 @@
+//#include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -6,6 +7,7 @@
 #include <vector>
 #include <sw/redis++/redis++.h>
 #include "redis.h"
+#include "session_manager.h"
 
 const std::string url = "tcp://127.0.0.1:6379";
 
@@ -78,10 +80,24 @@ long long Redis::hits()
 	return redis.command<long long>("get", "movepoint.ru:hits");
 }
 
-long long Redis::new_session()
+std::pair<long long, std::string> Redis::new_session()
 {
 	auto redis = get_redis();
-	return redis.command<long long>("incr", "movepoint.ru:session");
+	auto session = redis.command<long long>("incr", "movepoint.ru:session");
+    static session_manager sm;
+    auto shash = sm.get_sessionhash(session);
+    return std::make_pair(session, shash);
+}
+
+std::string Redis::session_hash(long long session)
+{
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::ostringstream K;
+    K << "movepoint.ru:session:" << session << ":hash";
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::string key{K.str()};
+	auto redis = get_redis();
+	return redis.command<std::string>("get", key);
 }
 
 std::string Redis::status()
