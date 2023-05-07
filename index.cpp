@@ -9,19 +9,32 @@
 
 using namespace std::string_literals;
 
-Index::Index()
+Index::Index(const std::string &ul)
+    : user_login(ul)
 {
 }
 
-std::string Index::content() const
+static std::string escape(const std::string &str)
+{
+	std::ostringstream ret;
+	for (const char c : str) {
+		if (c == '<')
+			ret << "&lt;";
+		else if (c == '>')
+			ret << "&gt;";
+		else
+			ret << c;
+	}
+	return ret.str();
+}
+
+std::string Index::content(long long session) const
 {
     Redis redis;
     redis.hit();
-    static snippet s_head("head.htm");
     static snippet s_index("index.html");
     static snippet s_commenttoo("comment_too.htm");
     static snippet s_script("script.js");
-    static snippet s_header("header.htm");
     static snippet s_rutracker("rutracker.htm");
     tags::div container;
     container.push_attr("class", "container");
@@ -58,12 +71,14 @@ std::string Index::content() const
     container.innerhtml(container1.content() + container2.content());
     tags::script script;
     script.innerhtml(s_script.content());
-    tags::header header;
+#include "header.view"
+    auto login = redis.session_login(session);
+    auto dn = redis.display_name(login);
     tags::h2 status;
     status.innerhtml(redis.status() + " edition");
-    header.innerhtml(s_header.content() + status.content());
-    auto bodyhtml = header.content() + s_index.content() + s_rutracker.content()
-	            + container.content() + script.content();
+    auto bodyhtml = header_view(dn) + status.content()
+                    + s_index.content() + s_rutracker.content()
+	                + container.content() + script.content();
 #include "page.view"
     return page_view(true, bodyhtml);
 }

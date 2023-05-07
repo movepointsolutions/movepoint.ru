@@ -90,12 +90,45 @@ std::pair<long long, std::string> Redis::new_session()
     return std::make_pair(session, shash);
 }
 
+void Redis::login_session(long long session, const std::string &login)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:session:" << session << ":login";
+    std::string key{K.str()};
+	auto redis = get_redis();
+	redis.set(key, login);
+}
+
+std::string Redis::session_login(long long session)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:session:" << session << ":login";
+    std::string key{K.str()};
+	auto redis = get_redis();
+	auto v = redis.get(key);
+    if (v.has_value())
+        return v.value();
+    else
+        return std::string();
+}
+
+std::string Redis::display_name(const std::string &login)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:acc:" << login << ":dn";
+    std::string key{K.str()};
+	auto redis = get_redis();
+	auto v = redis.get(key);
+    if (v.has_value())
+        return v.value();
+    else
+        return std::string();
+}
+
 void Redis::session_hash(long long session, std::string sessionhash)
 {
-    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::ostringstream K;
     K << "movepoint.ru:session:" << session << ":hash";
-    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::string key{K.str()};
 	auto redis = get_redis();
 	redis.set(key, sessionhash);
@@ -106,6 +139,21 @@ std::string Redis::session_hash(long long session)
     //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::ostringstream K;
     K << "movepoint.ru:session:" << session << ":hash";
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::string key{K.str()};
+	auto redis = get_redis();
+	auto v = redis.get(key);
+    if (v.has_value())
+        return v.value();
+    else
+        return std::string();
+}
+
+std::string Redis::password_hash(const std::string &login)
+{
+    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::ostringstream K;
+    K << "movepoint.ru:acc:" << login << ":ph";
     //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::string key{K.str()};
 	auto redis = get_redis();
