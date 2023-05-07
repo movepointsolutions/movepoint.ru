@@ -5,6 +5,7 @@
 #include "index.h"
 #include "redis.h"
 #include "season.h"
+#include "login.h"
 #include "comments.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
@@ -69,6 +70,37 @@ message_generator request_handler::wiki()
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
     const auto wiki_link = "https://wikireality.ru/wiki/Lina_the_Dark_Elf";
     res.set(http::field::location, wiki_link);
+    res.keep_alive(request.keep_alive());
+    return res;
+}
+
+message_generator request_handler::login(long long session)
+{
+    static Login login;
+    std::string body;
+    try {
+        body = std::move(login.content());
+    } catch (std::exception &exc) {
+        return server_error(exc.what());
+    }
+
+    http::response<http::string_body> res;
+    res.result(http::status::ok);
+    res.version(request.version());
+    res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res.set(http::field::content_type, "text/html");
+    if (session < 0) {
+        static Redis redis;
+        std::ostringstream cookie1, cookie2;
+        std::pair<long long, std::string> session{redis.new_session()};
+        cookie1 << "session=" << session.first;
+        cookie2 << "session_hash=" << session.second;
+        std::cerr << "Set " << cookie1.str() << std::endl;
+        res.set(http::field::set_cookie, cookie1.str());
+        res.insert(http::field::set_cookie, cookie2.str());
+    }
+    res.body() = body;
+    res.content_length(body.size());
     res.keep_alive(request.keep_alive());
     return res;
 }
@@ -254,7 +286,7 @@ message_generator request_handler::response()
     }
 
     if (target == "/login.html" && method == http::verb::get) {
-        return wiki();
+        return login(session);
     } else if (target == "/login.html" && method == http::verb::post) {
         return empty_body(target);
     }
