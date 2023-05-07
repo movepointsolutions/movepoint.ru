@@ -1,0 +1,23 @@
+auto page_view = [](bool styled, const std::string &content) {
+    auto doctype = "<!DOCTYPE html>"s;
+    tags::html html;
+    html.push_attr("lang", "ru");
+    tags::head head;
+    static snippet s_head("head.htm");
+    static snippet s_style("style.css");
+    tags::style style;
+    style.innerhtml(s_style.content());
+    auto head_content = s_head.content();
+    if (styled)
+        head_content += style.content();
+    head.innerhtml(head_content);
+    tags::body body;
+    tags::div container;
+    container.push_attr("class", "container");
+    container.innerhtml(content);
+    body.innerhtml(container.content());
+    html.innerhtml(head.content() + body.content());
+    return doctype + html.content();
+};
+
+// vim: syntax=cpp

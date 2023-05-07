@@ -4,19 +4,12 @@
 #include "track.h"
 #include "engine.h"
 #include "comments.h"
+#include "redis.h"
+#include "snippet.h"
 
 using namespace std::string_literals;
 
 Index::Index()
-    : s_head("head.htm")
-    , s_index("index.html")
-    , s_archive("archive.htm")
-    , s_commenttoo("comment_too.htm")
-    , s_tail("tail.htm")
-    , s_script("script.js")
-    , s_style("style.css")
-    , s_header("header.htm")
-    , s_rutracker("rutracker.htm")
 {
 }
 
@@ -24,14 +17,12 @@ std::string Index::content() const
 {
     Redis redis;
     redis.hit();
-    auto doctype = "<!DOCTYPE html>"s;
-    tags::html html;
-    html.push_attr("lang", "ru");
-    tags::head head;
-    tags::style style;
-    style.innerhtml(s_style.content());
-    head.innerhtml(s_head.content() + style.content());
-    tags::body body;
+    static snippet s_head("head.htm");
+    static snippet s_index("index.html");
+    static snippet s_commenttoo("comment_too.htm");
+    static snippet s_script("script.js");
+    static snippet s_header("header.htm");
+    static snippet s_rutracker("rutracker.htm");
     tags::div container;
     container.push_attr("class", "container");
     tags::div container1;
@@ -72,11 +63,7 @@ std::string Index::content() const
     status.innerhtml(redis.status() + " edition");
     header.innerhtml(s_header.content() + status.content());
     auto bodyhtml = header.content() + s_index.content() + s_rutracker.content()
-	            + container.content() + script.content(); //+ s_tail.content();
-    tags::div outer_container;
-    outer_container.push_attr("class", "container");
-    outer_container.innerhtml(bodyhtml);
-    body.innerhtml(outer_container.content());
-    html.innerhtml(head.content() + body.content());
-    return doctype + html.content();
+	            + container.content() + script.content();
+#include "page.view"
+    return page_view(true, bodyhtml);
 }

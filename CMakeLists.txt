@@ -19,6 +19,7 @@ add_executable(movepoint
 	movepoint.cpp
 	redis.cpp
 	season.cpp
+    login.cpp
     comments.cpp
 	snippet.cpp
     handler.cpp
