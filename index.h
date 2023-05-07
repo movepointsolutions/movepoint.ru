@@ -5,9 +5,10 @@
 
 class Index
 {
+    std::string user_login;
 public:
-    Index();
-    std::string content() const;
+    Index(const std::string &ul);
+    std::string content(long long) const;
 };
 
 #endif // INDEX_H

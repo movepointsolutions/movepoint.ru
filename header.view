@@ -1,0 +1,10 @@
+auto header_view = [](const std::string &dn) {
+    tags::h1 header;
+    std::string content = "Movepoint Project";
+    if (!dn.empty())
+        content += ", sir " + dn + "!";
+    header.innerhtml(escape(content));
+    return header.content();
+};
+
+// vim: syntax=cpp

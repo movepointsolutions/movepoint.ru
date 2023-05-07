@@ -16,6 +16,7 @@ protected:
     message_generator empty_body(boost::beast::string_view target);
     message_generator wiki();
     message_generator login(long long session);
+    message_generator post_login(long long session);
     message_generator get_root(long long session);
     message_generator post_root(long long session);
     message_generator get_season(const std::string &);

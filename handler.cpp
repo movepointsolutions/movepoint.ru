@@ -7,6 +7,7 @@
 #include "season.h"
 #include "login.h"
 #include "comments.h"
+#include "session_manager.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -105,12 +106,61 @@ message_generator request_handler::login(long long session)
     return res;
 }
 
+message_generator request_handler::post_login(long long session)
+{
+    std::string login;
+    std::string password;
+
+    auto request_body = request.body();
+    auto url="http://post.data/?" + request_body;
+    urls::url_view uv(url);
+    auto pv = uv.params();
+    for (auto p : pv) {
+        if (p.key == "login")
+            login = p.value;
+        else if (p.key == "password")
+            password = p.value;
+    }
+
+    if (login.empty() || login.find('\n') != std::string::npos || login.size() > 16)
+        return bad_request("Invalid login");
+
+    if (password.empty() || password.find('\n') != std::string::npos || password.size() > 16)
+        return bad_request("Invalid password");
+
+    try {
+        static session_manager sm;
+        auto ph = sm.get_passwordhash(password);
+        static Redis redis;
+        auto vph = redis.password_hash(login);
+        std::cerr << "LOGIN" << login << ":" << ph << ":" << vph << std::endl;
+        if (ph != vph)
+            return bad_request("Login and password don't match");
+        redis.login_session(session, login);
+
+        std::string body = "you successfully logged in";
+        http::response<http::string_body> res;
+        res.result(http::status::see_other);
+        res.version(request.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.set(http::field::location, "/");
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(request.keep_alive());
+        return res;
+    } catch (std::exception &exc) {
+        return server_error(exc.what());
+    }
+}
+
 message_generator request_handler::get_root(long long session)
 {
-    static Index index;
+    static Redis redis;
+    Index index{redis.session_login(session)};
     std::string body;
     try {
-        body = std::move(index.content());
+        body = std::move(index.content(session));
     } catch (std::exception &exc) {
         return server_error(exc.what());
     }
@@ -121,7 +171,6 @@ message_generator request_handler::get_root(long long session)
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
     res.set(http::field::content_type, "text/html");
     if (session < 0) {
-        static Redis redis;
         std::ostringstream cookie1, cookie2;
         std::pair<long long, std::string> session{redis.new_session()};
         cookie1 << "session=" << session.first;
@@ -288,7 +337,7 @@ message_generator request_handler::response()
     if (target == "/login.html" && method == http::verb::get) {
         return login(session);
     } else if (target == "/login.html" && method == http::verb::post) {
-        return empty_body(target);
+        return post_login(session);
     }
 
     return not_found(request.target());
