@@ -334,6 +334,12 @@ message_generator request_handler::response()
         return empty_body(target);
     }
 
+    if (target == "/season5.html" && method == http::verb::get) {
+        return get_season("season5");
+    } else if (target == "/season5.html" && method == http::verb::post) {
+        return empty_body(target);
+    }
+
     if (target == "/login.html" && method == http::verb::get) {
         return login(session);
     } else if (target == "/login.html" && method == http::verb::post) {
