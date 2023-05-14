@@ -1,0 +1,33 @@
+/*
+<video controls width="320">
+    <source src="/pub/demo.webm" type="video/webm">
+    <source src="/pub/demo.mp4" type="video/mp4">
+    Download the
+    <a href="/pub/demo.webm">WEBM</a>
+    or
+    <a href="/pub/demo.mp4">MP4</a>
+    video.
+</video>
+*/
+auto video_view = [](const std::string &login) {
+    tags::video video;
+    video.push_attr("controls");
+    if (!login.empty())
+        video.push_attr("loop");
+    video.push_attr("width", "320");
+
+    //auto url = login.empty() ? "/pub/demo.mp4"s : "/pub/anekdemo.mp4"s;
+    //auto url = "/pub/anekdemo.mp4"s;
+    auto url = "/pub/demo.mp4"s;
+    tags::source source;
+    source.push_attr("src", url);
+    source.push_attr("type", "video/mp4");
+    auto d = "Download ";
+    tags::a a;
+    a.push_attr("href", url);
+    a.innerhtml("MP4");
+    video.innerhtml(source.content() + d + a.content());
+    return video.content();
+};
+
+// vim: syntax=cpp
