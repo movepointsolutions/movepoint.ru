@@ -4,6 +4,7 @@
 #include "track.h"
 #include "engine.h"
 #include "comments.h"
+#include "comment_form.h"
 #include "redis.h"
 #include "snippet.h"
 
@@ -33,7 +34,7 @@ std::string Index::content(long long session) const
     Redis redis;
     redis.hit();
     static snippet s_index("index.html");
-    static snippet s_commenttoo("comment_too.htm");
+    static snippet s_lvideo("lvideo.htm");
     static snippet s_script("script.js");
     static snippet s_rutracker("rutracker.htm");
     tags::div container;
@@ -56,14 +57,20 @@ std::string Index::content(long long session) const
 	    tags::a season4;
 	    season4.push_attr("href", "/season4.html");
 	    season4.innerhtml("Season 4");
+	    tags::a season5;
+	    season5.push_attr("href", "/season5.html");
+	    season5.innerhtml("Season 5");
 	    seasons.innerhtml(season1.content()
                          + season2.content()
                          + season3.content()
-                         + season4.content());
+                         + season4.content()
+                         + season5.content()
+       );
     }
     //seasons.push_attr("class", "hidden");
     Comments comments;
-    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + s_commenttoo.content());
+    CommentForm cf;
+    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + cf.content(session));
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
 #include "lina.view"
@@ -76,8 +83,9 @@ std::string Index::content(long long session) const
     auto dn = redis.display_name(login);
     tags::h2 status;
     status.innerhtml(redis.status() + " edition");
+#include "video.view"
     auto bodyhtml = header_view(dn) + status.content()
-                    + s_index.content() + s_rutracker.content()
+                    + video_view(login) + s_rutracker.content()
 	                + container.content() + script.content();
 #include "page.view"
     return page_view(true, bodyhtml);

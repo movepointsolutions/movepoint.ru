@@ -5,6 +5,7 @@ auto lina_view = [](){
         tags::img img;
         img.push_attr("alt", "Lina the Dark Elf");
         img.push_attr("src", "/static/teenager_lina_sticker.png");
+        img.push_attr("width", "320");
         a1.innerhtml(img.content());
     }
     tags::a a2;
@@ -13,6 +14,7 @@ auto lina_view = [](){
         tags::img img;
         img.push_attr("alt", "CC BY-NC");
         img.push_attr("src", "/static/by-nc.png");
+        img.push_attr("width", "320");
         a2.innerhtml(img.content());
     }
     return a1.content() + a2.content();
