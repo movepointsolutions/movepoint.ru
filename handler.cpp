@@ -211,12 +211,21 @@ message_generator request_handler::post_root(long long session)
                 file = p.value;
         }
     } else if (content_type.starts_with(multipart)) {
-        std::string msg = "From: Movepoint <internal@movepoint.ru\r\n" +
-                          "Content-type: "s + content_type + "\r\n" + request_body;
+        std::string msg = "From: Movepoint <internal@movepoint.ru>\r\n";
+        for (const auto &f : request.base()) {
+            msg += f.name_string();
+            msg += ": "s;
+            msg += f.value();
+            msg += "\r\n";
+        }
+        msg += "\r\n" + request_body;
+
         mailio::message message;
+        message.line_policy(mailio::codec::line_len_policy_t::RECOMMENDED, mailio::codec::line_len_policy_t::VERYLARGE);
         message.parse(msg);
         const auto parts = message.parts();
         for (const auto &p : parts) {
+            std::cerr << p.name() << std::endl;
             if (p.name() == "nickname")
                 nickname = p.content();
             else if (p.name() == "text")
