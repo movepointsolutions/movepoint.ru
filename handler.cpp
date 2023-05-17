@@ -1,6 +1,7 @@
 #include <sstream>
 #include <string>
 #include <boost/url.hpp>
+#include <mailio/message.hpp>
 #include "handler.h"
 #include "index.h"
 #include "redis.h"
@@ -195,8 +196,8 @@ message_generator request_handler::post_root(long long session)
     std::string text;
     std::string file;
 
-    auto content_type = request.base()[http::field::content_type];
-    const auto multipart = "multipart/form-data; boundary="s;
+    std::string content_type = request.base()[http::field::content_type];
+    const auto multipart = "multipart/form-data"s;
     if (content_type == "application/x-www-form-urlencoded") {
         auto url="http://post.data/?" + request_body;
         urls::url_view uv(url);
@@ -210,26 +211,13 @@ message_generator request_handler::post_root(long long session)
                 file = p.value;
         }
     } else if (content_type.starts_with(multipart)) {
-        std::string boundary = content_type.substr(multipart.size());
-        if (boundary[0] == '"') {
-            const auto q = boundary.find('"', 1);
-            const auto start = 1;
-            const auto size = q - start;
-            boundary = boundary.substr(start, size);
-            //std::cerr << content_type << std::endl << "BNDRY" << boundary << std::endl;
+        std::string msg = "From: Movepoint <internal@movepoint.ru\r\n" +
+                          "Content-type: "s + content_type + "\r\n" + request_body;
+        mailio::message message;
+        message.parse(msg);
+        const auto parts = message.parts();
+        for (const auto &p : parts) {
         }
-        auto b = "--" + boundary;
-        auto i = -1;
-        std::vector<std::string> parts;
-        do {
-            auto j = request_body.find(b, i + 1);
-            if (j != 0 && j != std::string::npos)
-                parts.push_back(request_body.substr(i + b.size(), j - i - b.size() - 2));
-            //std::cerr << "BND" << j << std::endl;
-            i = j;
-        } while (i != std::string::npos);
-        for (auto p : parts)
-            form_part part(p);
     }
 
     auto content_length = request.base()[http::field::content_length];
