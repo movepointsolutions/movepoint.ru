@@ -34,7 +34,7 @@ std::string Index::content(long long session) const
     Redis redis;
     redis.hit();
     static snippet s_index("index.html");
-    static snippet s_lvideo("lvideo.htm");
+    static snippet s_desc("desc.htm");
     static snippet s_script("script.js");
     static snippet s_rutracker("rutracker.htm");
     tags::div container;
@@ -85,7 +85,7 @@ std::string Index::content(long long session) const
     status.innerhtml(redis.status() + " edition");
 #include "video.view"
     auto bodyhtml = header_view(dn) + status.content()
-                    + video_view(login) + s_rutracker.content()
+                    + s_desc.content() + video_view(login) + s_rutracker.content()
 	                + container.content() + script.content();
 #include "page.view"
     return page_view(true, bodyhtml);

@@ -8,6 +8,7 @@
 #include "login.h"
 #include "comments.h"
 #include "session_manager.h"
+#include "form_part.h"
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace http = beast::http;           // from <boost/beast/http.hpp>
@@ -15,6 +16,8 @@ namespace net = boost::asio;            // from <boost/asio.hpp>
 namespace urls = boost::urls;           // from <boost/url.hpp>
 
 using message_generator = http::message_generator;
+
+using namespace std::string_literals;
 
 request_handler::request_handler(const std::string &root, request_type &&req)
     : doc_root(root),
@@ -187,19 +190,52 @@ message_generator request_handler::get_root(long long session)
 
 message_generator request_handler::post_root(long long session)
 {
+    auto request_body = request.body();
     std::string nickname;
     std::string text;
+    std::string file;
 
-    auto request_body = request.body();
-    auto url="http://post.data/?" + request_body;
-    urls::url_view uv(url);
-    auto pv = uv.params();
-    for (auto p : pv) {
-        if (p.key == "nickname")
-            nickname = p.value;
-        else if (p.key == "text")
-            text = p.value;
+    auto content_type = request.base()[http::field::content_type];
+    const auto multipart = "multipart/form-data; boundary="s;
+    if (content_type == "application/x-www-form-urlencoded") {
+        auto url="http://post.data/?" + request_body;
+        urls::url_view uv(url);
+        auto pv = uv.params();
+        for (auto p : pv) {
+            if (p.key == "nickname")
+                nickname = p.value;
+            else if (p.key == "text")
+                text = p.value;
+            else if (p.key == "file")
+                file = p.value;
+        }
+    } else if (content_type.starts_with(multipart)) {
+        std::string boundary = content_type.substr(multipart.size());
+        if (boundary[0] == '"') {
+            const auto q = boundary.find('"', 1);
+            const auto start = 1;
+            const auto size = q - start;
+            boundary = boundary.substr(start, size);
+            //std::cerr << content_type << std::endl << "BNDRY" << boundary << std::endl;
+        }
+        auto b = "--" + boundary;
+        auto i = -1;
+        std::vector<std::string> parts;
+        do {
+            auto j = request_body.find(b, i + 1);
+            if (j != 0 && j != std::string::npos)
+                parts.push_back(request_body.substr(i + b.size(), j - i - b.size() - 2));
+            //std::cerr << "BND" << j << std::endl;
+            i = j;
+        } while (i != std::string::npos);
+        for (auto p : parts)
+            form_part part(p);
     }
+
+    auto content_length = request.base()[http::field::content_length];
+    //std::cerr << request_body << std::endl;
+    if (!file.empty())
+        std::cerr << "FILE" << file << std::endl;
 
     if (nickname.empty() || nickname.find('\n') != std::string::npos)
         return bad_request("Invalid nickname");
