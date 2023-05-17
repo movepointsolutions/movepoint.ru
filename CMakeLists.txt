@@ -23,7 +23,6 @@ add_executable(movepoint
 	season.cpp
     login.cpp
     comments.cpp
-    comment_form.cpp
 	snippet.cpp
     handler.cpp
     sha1/sha1.c

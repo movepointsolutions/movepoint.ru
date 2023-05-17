@@ -1,17 +1,4 @@
-#include "comment_form.h"
-#include "engine.h"
-#include "redis.h"
-
-using namespace std::string_literals;
-
-/*static std::string elem(const std::string &label, const std::string &type)
-{
-    tags::label label;
-    label.push_attr("for", type);
-}*/
-
-std::string CommentForm::content(long long session)
-{
+auto comment_view = [](long long session) {
     static Redis redis;
     std::string login{redis.session_login(session)};
     std::string dn{redis.display_name(login)};
@@ -77,4 +64,6 @@ std::string CommentForm::content(long long session)
 
     group.innerhtml(form.content());
     return h3.content() + group.content();
-}
+};
+
+// vim: syntax=cpp

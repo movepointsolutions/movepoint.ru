@@ -4,7 +4,6 @@
 #include "track.h"
 #include "engine.h"
 #include "comments.h"
-#include "comment_form.h"
 #include "redis.h"
 #include "snippet.h"
 
@@ -69,8 +68,8 @@ std::string Index::content(long long session) const
     }
     //seasons.push_attr("class", "hidden");
     Comments comments;
-    CommentForm cf;
-    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + cf.content(session));
+#include "comment.view"
+    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + comment_view(session));
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
 #include "lina.view"
