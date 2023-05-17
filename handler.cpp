@@ -217,6 +217,10 @@ message_generator request_handler::post_root(long long session)
         message.parse(msg);
         const auto parts = message.parts();
         for (const auto &p : parts) {
+            if (p.name() == "nickname")
+                nickname = p.content();
+            else if (p.name() == "text")
+                text = p.content();
         }
     }
 
