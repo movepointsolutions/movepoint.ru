@@ -22,7 +22,8 @@ std::string CommentForm::content(long long session)
     tags::form form;
     form.push_attr("action", "/");
     form.push_attr("method", "post");
-    //form.push_attr("enctype", "multipart/form-data");
+    if (!login.empty())
+        form.push_attr("enctype", "multipart/form-data");
     
     const std::string ctl1 = [&dn](){
         tags::label label;
@@ -49,8 +50,7 @@ std::string CommentForm::content(long long session)
         return label.content() + textarea.content();
     }();
 
-    const std::string ctl3 = [&session](){
-        auto login = redis.session_login(session);
+    const std::string ctl3 = [&login](){
         if (login.empty())
             return ""s;
         tags::label label;

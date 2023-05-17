@@ -1,7 +1,11 @@
-run-clang: build/movepoint
+run-clang: build-clang/movepoint
+	$(MAKE) -C build-clang/
 	build-clang/movepoint 2>&1 | tee -a log
 
 run: build/movepoint
-	LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib build/movepoint 2>&1 | tee -a log
+	$(MAKE) -C build/
+	build/movepoint 2>&1 | tee -a log
 
-.PHONY: install list default run run_g
+.PHONY: install list default run run_g run-vlang
+
+# vim: noet

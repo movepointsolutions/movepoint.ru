@@ -26,6 +26,7 @@ add_executable(movepoint
     handler.cpp
     sha1/sha1.c
     session_manager.cpp
+    form_part.cpp
 )
 
 set_property(TARGET movepoint PROPERTY CXX_STANDARD 20)
