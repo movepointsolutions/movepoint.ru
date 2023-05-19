@@ -69,7 +69,9 @@ std::string Index::content(long long session) const
     //seasons.push_attr("class", "hidden");
     Comments comments;
 #include "comment.view"
-    container1.innerhtml(comments_header.content() + seasons.content() + comments.content() + comment_view(session));
+#include "status.view"
+    container1.innerhtml(comments_header.content() + seasons.content() +
+                         status_view(session) + comments.content() + comment_view(session));
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
 #include "lina.view"

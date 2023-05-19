@@ -61,7 +61,7 @@ message_generator request_handler::server_error(beast::string_view what)
     return res;
 };
 
-message_generator request_handler::empty_body(beast::string_view target)
+message_generator request_handler::empty_body()
 {
     http::response<http::empty_body> res{http::status::ok, request.version()};
     res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
@@ -268,6 +268,16 @@ message_generator request_handler::post_root(long long session)
     }
 }
 
+message_generator request_handler::get_invite(std::string invite)
+{
+    return empty_body();
+}
+
+message_generator request_handler::post_invite(std::string invite)
+{
+    return empty_body();
+}
+
 message_generator request_handler::get_season(const std::string &key)
 {
     Season season(key);
@@ -284,9 +294,46 @@ message_generator request_handler::get_season(const std::string &key)
     return res;
 }
 
+message_generator request_handler::post_status(long long session)
+{
+    std::string status;
+
+    auto request_body = request.body();
+    auto url="http://post.data/?" + request_body;
+    urls::url_view uv(url);
+    auto pv = uv.params();
+    for (auto p : pv) {
+        if (p.key == "status")
+            status = p.value;
+    }
+
+    if (status.empty() || status.find('\n') != std::string::npos || status.size() > 128)
+        return bad_request("Invalid status");
+
+    try {
+        static Redis redis;
+        std::string login{redis.session_login(session)};
+        redis.status(status);
+
+        std::string body = "you successfully changed status";
+        http::response<http::string_body> res;
+        res.result(http::status::see_other);
+        res.version(request.version());
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.set(http::field::location, "/");
+        res.body() = body;
+        res.content_length(body.size());
+        res.keep_alive(request.keep_alive());
+        return res;
+    } catch (std::exception &exc) {
+        return server_error(exc.what());
+    }
+}
+
 message_generator request_handler::response()
 {
-    auto target = request.target();
+    std::string target = request.target();
     auto method = request.method();
     auto fields = request.base();
     auto forwarded = fields[http::field::forwarded];
@@ -347,40 +394,50 @@ message_generator request_handler::response()
             return bad_request("you must accept cookies");
     }
 
+    auto invite_base = "/invite/"s;
+    if (target.starts_with(invite_base)) {
+        auto invite = target.substr(invite_base.size());
+        return get_invite(invite);
+    }
+
     if (target == "/season1.html" && method == http::verb::get) {
         return get_season("season1");
     } else if (target == "/season1.html" && method == http::verb::post) {
-        return empty_body(target);
+        return empty_body();
     }
 
     if (target == "/season2.html" && method == http::verb::get) {
         return get_season("season2");
     } else if (target == "/season2.html" && method == http::verb::post) {
-        return empty_body(target);
+        return empty_body();
     }
 
     if (target == "/season3.html" && method == http::verb::get) {
         return get_season("season3");
     } else if (target == "/season3.html" && method == http::verb::post) {
-        return empty_body(target);
+        return empty_body();
     }
 
     if (target == "/season4.html" && method == http::verb::get) {
         return get_season("season4");
     } else if (target == "/season4.html" && method == http::verb::post) {
-        return empty_body(target);
+        return empty_body();
     }
 
     if (target == "/season5.html" && method == http::verb::get) {
         return get_season("season5");
     } else if (target == "/season5.html" && method == http::verb::post) {
-        return empty_body(target);
+        return empty_body();
     }
 
     if (target == "/login.html" && method == http::verb::get) {
         return login(session);
     } else if (target == "/login.html" && method == http::verb::post) {
         return post_login(session);
+    }
+
+    if (target == "/status" && method == http::verb::post) {
+        return post_status(session);
     }
 
     return not_found(request.target());

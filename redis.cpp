@@ -1,4 +1,3 @@
-//#include <format>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -90,6 +89,15 @@ std::pair<long long, std::string> Redis::new_session()
     return std::make_pair(session, shash);
 }
 
+std::string Redis::new_invite(const std::string &login)
+{
+	auto redis = get_redis();
+    static session_manager sm;
+    auto ihash = sm.get_invitehash(login);
+    invite_hash(login, ihash);
+    return ihash;
+}
+
 void Redis::login_session(long long session, const std::string &login)
 {
     std::ostringstream K;
@@ -125,7 +133,16 @@ std::string Redis::display_name(const std::string &login)
         return std::string();
 }
 
-void Redis::session_hash(long long session, std::string sessionhash)
+void Redis::invite_hash(const std::string &login, const std::string &invitehash)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:invite:" << login << ":hash";
+    std::string key{K.str()};
+	auto redis = get_redis();
+	redis.set(key, invitehash);
+}
+
+void Redis::session_hash(long long session, const std::string &sessionhash)
 {
     std::ostringstream K;
     K << "movepoint.ru:session:" << session << ":hash";
@@ -151,10 +168,21 @@ std::string Redis::session_hash(long long session)
 
 std::string Redis::password_hash(const std::string &login)
 {
-    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
     std::ostringstream K;
     K << "movepoint.ru:acc:" << login << ":ph";
-    //std::string key{std::format("movepoint.ru:session:{}:hash", session);
+    std::string key{K.str()};
+	auto redis = get_redis();
+	auto v = redis.get(key);
+    if (v.has_value())
+        return v.value();
+    else
+        return std::string();
+}
+
+std::string Redis::invite_hash(const std::string &login)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:invite:" << login << ":ih";
     std::string key{K.str()};
 	auto redis = get_redis();
 	auto v = redis.get(key);
@@ -173,6 +201,13 @@ std::string Redis::status()
 	for (const auto &s : statuses)
 		ret << escape(s);
 	return ret.str();
+}
+
+void Redis::status(const std::string &s)
+{
+	auto redis = get_redis();
+	std::vector<std::string> statuses;
+	redis.rpush("movepoint.ru:status", s);
 }
 
 std::vector<std::string> Redis::spamlist()
