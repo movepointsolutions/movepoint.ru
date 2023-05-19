@@ -394,6 +394,10 @@ message_generator request_handler::response()
             return bad_request("you must accept cookies");
     }
 
+    if (target == "/invite" && method == http::verb::post) {
+        return new_invite();
+    }
+
     auto invite_base = "/invite/"s;
     if (target.starts_with(invite_base)) {
         auto invite = target.substr(invite_base.size());
