@@ -1,0 +1,43 @@
+auto status_view = [](long long session) {
+    static Redis redis;
+    std::string login{redis.session_login(session)};
+    std::string dn{redis.display_name(login)};
+    if (login.empty())
+        return std::string();
+
+    tags::h3 h3;
+    h3.innerhtml("Set status~");
+    tags::div group;
+    group.push_attr("class", "form-group");
+    tags::form form;
+    form.push_attr("action", "/status");
+    form.push_attr("method", "post");
+    
+    const std::string ctl1 = [&dn](){
+        tags::label label;
+        label.push_attr("for", "status");
+        label.innerhtml("Status (*)");
+        tags::input input;
+        input.push_attr("class", "form-control");
+        input.push_attr("type", "text");
+        input.push_attr("id", "status");
+        input.push_attr("name", "status");
+        return label.content() + input.content();
+    }();
+
+    const std::string ctl2 = [](){
+        tags::button button;
+        button.push_attr("class", "form-control");
+        button.push_attr("type", "submit");
+        button.push_attr("name", "submit");
+        button.push_attr("value", "Send");
+        button.innerhtml("Send");
+        return button.content();
+    }();
+    form.innerhtml(ctl1 + ctl2);
+
+    group.innerhtml(form.content());
+    return h3.content() + group.content();
+};
+
+// vim: syntax=cpp

@@ -13,12 +13,15 @@ protected:
     message_generator bad_request(boost::beast::string_view why);
     message_generator not_found(boost::beast::string_view target);
     message_generator server_error(boost::beast::string_view what);
-    message_generator empty_body(boost::beast::string_view target);
+    message_generator empty_body();
     message_generator wiki();
     message_generator login(long long session);
     message_generator post_login(long long session);
     message_generator get_root(long long session);
     message_generator post_root(long long session);
+    message_generator post_status(long long session);
+    message_generator get_invite(std::string invite);
+    message_generator post_invite(std::string invite);
     message_generator get_season(const std::string &);
 
 public:
