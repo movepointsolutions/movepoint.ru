@@ -70,8 +70,11 @@ std::string Index::content(long long session) const
     Comments comments;
 #include "comment.view"
 #include "status.view"
+#include "invite.view"
     container1.innerhtml(comments_header.content() + seasons.content() +
-                         status_view(session) + comments.content() + comment_view(session));
+                         status_view(session) +
+                         invite_view(session) +
+                         comments.content() + comment_view(session));
     tags::div container2;
     container2.push_attr("class", "container col-md-4");
 #include "lina.view"

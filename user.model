@@ -1,0 +1,7 @@
+struct user_model {
+    unsigned id;
+    std::string username;
+    std::string display_name;
+};
+
+// vim: syntax=cpp
