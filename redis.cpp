@@ -1,3 +1,4 @@
+#include <chrono>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -67,6 +68,13 @@ void Redis::hit()
 	//std::cerr << "HIT..." << std::endl;
     try {
 	    redis.incr("movepoint.ru:hits");
+        const std::chrono::time_point now{std::chrono::system_clock::now()};
+     
+        const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
+        std::ostringstream YMD;
+        YMD << ymd.year() << "/" << ymd.month() << "/" << ymd.day();
+        std::string key = "movepoint.ru:hits:" + YMD.str();
+	    redis.incr(key);
     } catch (...) {
     	std::cerr << "Can't record hit" << std::endl;
         //throw;
@@ -77,6 +85,18 @@ long long Redis::hits()
 {
 	auto redis = get_redis();
 	return redis.command<long long>("get", "movepoint.ru:hits");
+}
+
+long long Redis::hits_today()
+{
+	auto redis = get_redis();
+    const std::chrono::time_point now{std::chrono::system_clock::now()};
+ 
+    const std::chrono::year_month_day ymd{std::chrono::floor<std::chrono::days>(now)};
+    std::ostringstream YMD;
+    YMD << ymd.year() << "/" << ymd.month() << "/" << ymd.day();
+    std::string key = "movepoint.ru:hits:" + YMD.str();
+	return redis.command<long long>("get", key);
 }
 
 std::pair<long long, std::string> Redis::new_session()
