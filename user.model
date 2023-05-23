@@ -1,7 +1,32 @@
 struct user_model {
     unsigned id;
-    std::string username;
+    std::string name;
     std::string display_name;
 };
+
+std::string user_model_name_key(unsigned id)
+{
+    std::ostringstream K;
+    K << "movepoint.ru:user:" << id << ":name";
+    return K.str();
+}
+
+std::string get_user_by_name(const std::string &name)
+{
+	auto redis = get_redis();
+	return redis.command<std::string>("get", user_model_name_key(id).c_str());
+}
+
+std::string get_user_name(long long id)
+{
+	auto redis = get_redis();
+	return redis.command<std::string>("get", user_model_name_key(id).c_str());
+}
+
+void set_user_name(unsigned id, const std::string &name)
+{
+	auto redis = get_redis();
+	redis.set(user_model_name_key(id), name);
+}
 
 // vim: syntax=cpp

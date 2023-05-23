@@ -395,7 +395,7 @@ message_generator request_handler::response()
     }
 
     if (target == "/invite" && method == http::verb::post) {
-        return new_invite();
+        return empty_body();//new_invite();
     }
 
     auto invite_base = "/invite/"s;
@@ -431,6 +431,12 @@ message_generator request_handler::response()
     if (target == "/season5.html" && method == http::verb::get) {
         return get_season("season5");
     } else if (target == "/season5.html" && method == http::verb::post) {
+        return empty_body();
+    }
+
+    if (target == "/season6.html" && method == http::verb::get) {
+        return get_season("season6");
+    } else if (target == "/season6.html" && method == http::verb::post) {
         return empty_body();
     }
 

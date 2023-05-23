@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include "index.h"
 #include "track.h"
@@ -43,29 +44,22 @@ std::string Index::content(long long session) const
     tags::h2 comments_header;
     comments_header.innerhtml("Комментарии"s);
     tags::p seasons;
-    {
-	    tags::a season1;
-	    season1.push_attr("href", "/season1.html");
-	    season1.innerhtml("Season 1");
-	    tags::a season2;
-	    season2.push_attr("href", "/season2.html");
-	    season2.innerhtml("Season 2");
-	    tags::a season3;
-	    season3.push_attr("href", "/season3.html");
-	    season3.innerhtml("Season 3");
-	    tags::a season4;
-	    season4.push_attr("href", "/season4.html");
-	    season4.innerhtml("Season 4");
-	    tags::a season5;
-	    season5.push_attr("href", "/season5.html");
-	    season5.innerhtml("Season 5");
-	    seasons.innerhtml(season1.content()
-                         + season2.content()
-                         + season3.content()
-                         + season4.content()
-                         + season5.content()
-       );
+    std::ostringstream S;
+    for (int s = 1; s <= 6; s++) {
+        std::ostringstream link, cpt;
+        link << "/" << s << ".html";
+        cpt << "Season" << s;
+
+	    tags::a season;
+	    season.push_attr("href", link.str());
+	    season.innerhtml(cpt.str());
+        S << season.content();
     }
+    tags::a tg;
+    tg.push_attr("href", "https://t.me/+2islB6n2lxJhMjhi");
+    tg.innerhtml("TG");
+    S << tg.content();
+    seasons.innerhtml(S.str());
     //seasons.push_attr("class", "hidden");
     Comments comments;
 #include "comment.view"
