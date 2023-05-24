@@ -1,5 +1,6 @@
 struct user_model {
     unsigned id;
+<<<<<<< HEAD
     std::string name;
     std::string display_name;
 };
@@ -29,4 +30,10 @@ void set_user_name(unsigned id, const std::string &name)
 	redis.set(user_model_name_key(id), name);
 }
 
+=======
+    std::string username;
+    std::string display_name;
+};
+
+>>>>>>> a4e2e06b81c5dcabd220f3eeb74d4814fe7bd244
 // vim: syntax=cpp
