@@ -14,6 +14,7 @@ class Redis
 public:
 	void hit();
 	long long hits();
+	long long hits_today();
 	std::pair<long long, std::string> new_session();
 	std::string new_invite(const std::string &);
     void login_session(long long, const std::string &);

@@ -9,7 +9,7 @@ auto comment_view = [](long long session) {
     tags::form form;
     form.push_attr("action", "/");
     form.push_attr("method", "post");
-    if (!login.empty())
+    if (false && !login.empty())
         form.push_attr("enctype", "multipart/form-data");
     
     const std::string ctl1 = [&dn](){
@@ -38,7 +38,7 @@ auto comment_view = [](long long session) {
     }();
 
     const std::string ctl3 = [&login](){
-        if (login.empty())
+        if (true || login.empty())
             return ""s;
         tags::label label;
         label.push_attr("for", "file");
