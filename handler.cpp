@@ -221,7 +221,7 @@ message_generator request_handler::post_root(long long session)
         msg += "\r\n" + request_body;
 
         mailio::message message;
-        message.line_policy(mailio::codec::line_len_policy_t::RECOMMENDED, mailio::codec::line_len_policy_t::VERYLARGE);
+        message.line_policy(mailio::codec::line_len_policy_t::VERYLARGE, mailio::codec::line_len_policy_t::VERYLARGE);
         message.parse(msg);
         const auto parts = message.parts();
         for (const auto &p : parts) {
@@ -439,6 +439,27 @@ message_generator request_handler::response()
     } else if (target == "/season6.html" && method == http::verb::post) {
         return empty_body();
     }
+
+    if (target == "/season7.html" && method == http::verb::get) {
+        return get_season("season7");
+    } else if (target == "/season7.html" && method == http::verb::post) {
+        return empty_body();
+    }
+
+    if (target == "/season8.html" && method == http::verb::get) {
+        return get_season("season8");
+    } else if (target == "/season8.html" && method == http::verb::post) {
+        return empty_body();
+    }
+
+    if (target == "/season9.html" && method == http::verb::get) {
+        return get_season("season9");
+    } else if (target == "/season9.html" && method == http::verb::post) {
+        return empty_body();
+    }
+
+    if (target == "/robots.txt")
+        return wiki();
 
     if (target == "/login.html" && method == http::verb::get) {
         return login(session);

@@ -5,6 +5,7 @@
 #include "track.h"
 #include "engine.h"
 #include "comments.h"
+#include "records.h"
 #include "redis.h"
 #include "snippet.h"
 
@@ -37,6 +38,9 @@ std::string Index::content(long long session) const
     static snippet s_desc("desc.htm");
     static snippet s_script("script.js");
     static snippet s_rutracker("rutracker.htm");
+    static snippet s_album("album.html");
+    static snippet s_torrent("torrent.html");
+    static snippet s_don("don.html");
     tags::div container;
     container.push_attr("class", "container");
     tags::div container1;
@@ -45,9 +49,9 @@ std::string Index::content(long long session) const
     comments_header.innerhtml("Комментарии"s);
     tags::p seasons;
     std::ostringstream S;
-    for (int s = 1; s <= 6; s++) {
+    for (int s = 1; s <= 9; s++) {
         std::ostringstream link, cpt;
-        link << "/" << s << ".html";
+        link << "/season" << s << ".html";
         cpt << "Season" << s;
 
 	    tags::a season;
@@ -82,8 +86,16 @@ std::string Index::content(long long session) const
     tags::h2 status;
     status.innerhtml(redis.status() + " edition");
 #include "video.view"
+    Records records;
+    tags::div demo2023;
+    demo2023.push_attr("id", "demo2023");
+    demo2023.innerhtml(s_album.content()
+                     + records.content()
+                     + s_don.content());
     auto bodyhtml = header_view(dn) + status.content()
-                    + s_desc.content() + video_view(login) + s_rutracker.content()
+                    + demo2023.content()
+                    + s_torrent.content()
+                    //+ video_view(login) + s_rutracker.content()
 	                + container.content() + script.content();
 #include "page.view"
     return page_view(true, bodyhtml);
