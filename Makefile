@@ -5,9 +5,11 @@ run-clang: build-clang/movepoint
 	build-clang/movepoint 2>&1 | tee -a log
 
 run: build/movepoint
-	$(MAKE) -C build/
 	build/movepoint 2>&1 | tee -a log
 
-.PHONY: install list default run run_g run-clang default
+build/movepoint:
+	$(MAKE) -C build/ movepoint
+
+.PHONY: build/movepoint install list default run run_g run-clang default
 
 # vim: noet

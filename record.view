@@ -1,0 +1,22 @@
+auto record_view = [&record](){
+    tags::article article;
+    article.push_attr("class", "record");
+    tags::b b;
+    std::ostringstream no;
+    no << record.no;
+    b.innerhtml(no.str());
+    tags::h3 h3;
+    tags::a a;
+    tags::i i;
+    i.innerhtml(record.group);
+    a.innerhtml(record.name + "(" + i.content() + ")");
+    a.push_attr("href", record.f_link);
+    h3.innerhtml(b.content() + a.content());
+    tags::audio audio;
+    audio.push_attr("src", record.a_link);
+    audio.push_attr("controls");
+    article.innerhtml(h3.content() + audio.content());
+    return article.content();
+};
+
+// vim: syntax=cpp

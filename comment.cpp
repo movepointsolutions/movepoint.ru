@@ -23,7 +23,7 @@ static std::string limit(std::string str, size_t size)
 	std::string::iterator i = str.begin();
 	while (true) {
 		std::string::iterator j = i;
-		for (int k = 0; k < 107; k++) {
+		for (int k = 0; k < 80; k++) {
 			if (*j == '\n')
 				k = 1;
 			if (j != str.end())

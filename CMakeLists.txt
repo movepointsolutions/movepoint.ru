@@ -11,8 +11,8 @@ find_package(Boost 1.68 REQUIRED COMPONENTS date_time regex unit_test_framework 
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-find_package(mailio REQUIRED)
-#add_subdirectory(mailio)
+#find_package(mailio REQUIRED)
+add_subdirectory(mailio)
 
 add_executable(movepoint
 	engine.cpp
@@ -23,6 +23,8 @@ add_executable(movepoint
 	season.cpp
     login.cpp
     comments.cpp
+    records.cpp
+    record.cpp
 	snippet.cpp
     handler.cpp
     sha1/sha1.c
