@@ -11,8 +11,6 @@ find_package(Boost 1.68 REQUIRED COMPONENTS date_time regex unit_test_framework 
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-#find_package(mailio REQUIRED)
-add_subdirectory(3rdparty/mimetic-0.9.8)
 
 add_executable(movepoint
 	engine.cpp
@@ -34,4 +32,4 @@ add_executable(movepoint
 
 set_property(TARGET movepoint PROPERTY CXX_STANDARD 20)
 target_include_directories(movepoint SYSTEM PUBLIC ${REDIS_INCLUDE_DIRS})
-target_link_libraries(movepoint mailio ${Boost_LIBRARIES} ${REDIS_LIBRARIES} Threads::Threads)
+target_link_libraries(movepoint mimetic ${Boost_LIBRARIES} ${REDIS_LIBRARIES} Threads::Threads)
