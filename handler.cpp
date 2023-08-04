@@ -1,7 +1,7 @@
 #include <sstream>
 #include <string>
 #include <boost/url.hpp>
-#include <mailio/message.hpp>
+#include <mimetic/mimetic.h>
 #include "handler.h"
 #include "index.h"
 #include "redis.h"
@@ -220,16 +220,23 @@ message_generator request_handler::post_root(long long session)
         }
         msg += "\r\n" + request_body;
 
-        mailio::message message;
-        message.line_policy(mailio::codec::line_len_policy_t::VERYLARGE, mailio::codec::line_len_policy_t::VERYLARGE);
-        message.parse(msg);
-        const auto parts = message.parts();
+        mimetic::MimeEntity entity;
+        entity.load(msg.begin(), msg.end());
+        const auto parts = entity.body().parts();
         for (const auto &p : parts) {
-            std::cerr << p.name() << std::endl;
-            if (p.name() == "nickname")
-                nickname = p.content();
-            else if (p.name() == "text")
-                text = p.content();
+            const auto cd = p->header().contentDisposition();
+            assert(cd.type() == "form-data");
+            std::cerr << cd << std::endl;
+            const std::string name = cd.param("name");
+            std::ostringstream O;
+            O << p->body();
+            const std::string value = O.str();
+            if (name == "nickname")
+                nickname = value;
+            else if (name == "text")
+                text = value;
+            else if (name == "file")
+                std::cerr << "file size: " << value.size() << std::endl;
         }
     }
 
