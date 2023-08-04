@@ -1,0 +1,3 @@
+[submodule "mimetic"]
+	path = mimetic
+	url = git@github.com:movepointsolutions/mimetic.git
