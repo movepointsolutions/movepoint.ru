@@ -50,13 +50,13 @@ std::string Index::content(long long session) const
     tags::p seasons;
     std::ostringstream S;
     for (int s = 1; s <= 9; s++) {
-        std::ostringstream link, cpt;
-        link << "/season" << s << ".html";
-        cpt << "Season" << s;
+        std::ostringstream link, label;
+        link << "/season/" << s;
+        label << "Season" << s;
 
 	    tags::a season;
 	    season.push_attr("href", link.str());
-	    season.innerhtml(cpt.str());
+	    season.innerhtml(label.str());
         S << season.content();
     }
     tags::a tg;
