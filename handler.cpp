@@ -338,6 +338,23 @@ message_generator request_handler::post_status(long long session)
     }
 }
 
+static std::list<std::string> parse_target(const std::string &tgt)
+{
+    std::istringstream T(tgt);
+    std::list<std::string> ret;
+    for (char c; T >> c; ) {
+        if (c == '/') {
+            if (!ret.empty() && !ret.back().empty())
+                ret.push_back({});
+        } else {
+            if (ret.empty())
+                ret.push_back(std::string());
+            ret.back().push_back(c);
+        }
+    }
+    return ret;
+}
+
 message_generator request_handler::response()
 {
     std::string target = request.target();
@@ -392,15 +409,24 @@ message_generator request_handler::response()
     std::cerr << request.method() << " " << target << " " << forwarded << " session=" << session << std::endl;
     //std::cerr << "Cookie: " << cookie << std::endl;
 
-    if (target == "/" && method == http::verb::get) {
-        return get_root(session);
-    } else if (target == "/" && method == http::verb::post) {
-        if (have_session)
-            return post_root(session);
-        else
-            return bad_request("you must accept cookies");
+    std::list<std::string> request_target = parse_target(target);
+    std::string ctrl;
+    if (!request_target.empty())
+        ctrl = request_target.front();
+
+    if (ctrl.empty()) {
+        if (method == http::verb::get) {
+            return get_root(session);
+        } else if (method == http::verb::post) {
+            if (have_session)
+                return post_root(session);
+            else
+                return bad_request("you must accept cookies");
+        } else // HEAD
+            return get_root(session);
     }
 
+/*
     if (target == "/invite" && method == http::verb::post) {
         return empty_body();//new_invite();
     }
@@ -410,71 +436,26 @@ message_generator request_handler::response()
         auto invite = target.substr(invite_base.size());
         return get_invite(invite);
     }
+*/
 
-    if (target == "/season1.html" && method == http::verb::get) {
-        return get_season("season1");
-    } else if (target == "/season1.html" && method == http::verb::post) {
-        return empty_body();
+    if (ctrl == "season") {
+        std::string season = "season" + request_target.back();
+        return get_season(season);
     }
 
-    if (target == "/season2.html" && method == http::verb::get) {
-        return get_season("season2");
-    } else if (target == "/season2.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season3.html" && method == http::verb::get) {
-        return get_season("season3");
-    } else if (target == "/season3.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season4.html" && method == http::verb::get) {
-        return get_season("season4");
-    } else if (target == "/season4.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season5.html" && method == http::verb::get) {
-        return get_season("season5");
-    } else if (target == "/season5.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season6.html" && method == http::verb::get) {
-        return get_season("season6");
-    } else if (target == "/season6.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season7.html" && method == http::verb::get) {
-        return get_season("season7");
-    } else if (target == "/season7.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season8.html" && method == http::verb::get) {
-        return get_season("season8");
-    } else if (target == "/season8.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/season9.html" && method == http::verb::get) {
-        return get_season("season9");
-    } else if (target == "/season9.html" && method == http::verb::post) {
-        return empty_body();
-    }
-
-    if (target == "/robots.txt")
+    if (ctrl == "robots.txt")
         return wiki();
 
-    if (target == "/login.html" && method == http::verb::get) {
-        return login(session);
-    } else if (target == "/login.html" && method == http::verb::post) {
-        return post_login(session);
+    if (ctrl == "login.html") {
+        if (method == http::verb::get)
+            return login(session);
+        else if (method == http::verb::post)
+            return post_login(session);
+        else
+            return bad_request("unknown method");
     }
 
-    if (target == "/status" && method == http::verb::post) {
+    if (ctrl == "status" && method == http::verb::post) {
         return post_status(session);
     }
 
