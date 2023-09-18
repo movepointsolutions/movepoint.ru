@@ -49,7 +49,7 @@ std::string Index::content(long long session) const
     comments_header.innerhtml("Комментарии"s);
     tags::p seasons;
     std::ostringstream S;
-    for (int s = 1; s <= 9; s++) {
+    for (int s = 1; s <= 10; s++) {
         std::ostringstream link, label;
         link << "/season/" << s;
         label << "Season" << s;
@@ -59,9 +59,10 @@ std::string Index::content(long long session) const
 	    season.innerhtml(label.str());
         S << season.content();
     }
-    tags::a tg;
+    /*tags::a tg;
     tg.push_attr("href", "https://t.me/+2islB6n2lxJhMjhi");
-    tg.innerhtml("TG");
+    tg.innerhtml("TG");*/
+    tags::br tg;
     S << tg.content();
     seasons.innerhtml(S.str());
     //seasons.push_attr("class", "hidden");

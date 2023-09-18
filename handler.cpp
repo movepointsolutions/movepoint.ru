@@ -189,12 +189,13 @@ message_generator request_handler::get_root(long long session)
     return res;
 }
 
-message_generator request_handler::post_root(long long session)
+message_generator request_handler::post_root(long long session, yield_context yield)
 {
     auto request_body = request.body();
     std::string nickname;
     std::string text;
     std::string file;
+    std::string captcha;
 
     std::string content_type = request.base()[http::field::content_type];
     const auto multipart = "multipart/form-data"s;
@@ -209,6 +210,8 @@ message_generator request_handler::post_root(long long session)
                 text = p.value;
             else if (p.key == "file")
                 file = p.value;
+            else if (p.key == "h-captcha-response")
+                captcha = p.value;
         }
     } else if (content_type.starts_with(multipart)) {
         std::string msg = "From: Movepoint <internal@movepoint.ru>\r\n";
@@ -237,8 +240,12 @@ message_generator request_handler::post_root(long long session)
                 text = value;
             else if (name == "file")
                 std::cerr << "file size: " << value.size() << std::endl;
+            else if (name == "h-captcha-response")
+                captcha = value;
         }
     }
+
+    std::cout << "CAPTCHA " << captcha << std::endl;
 
     auto content_length = request.base()[http::field::content_length];
     //std::cerr << request_body << std::endl;
@@ -248,6 +255,9 @@ message_generator request_handler::post_root(long long session)
     if (nickname.empty() || nickname.find('\n') != std::string::npos)
         return bad_request("Invalid nickname");
 
+    if (true)
+        return server_error("spam detected");
+
     try {
         static Redis redis;
         static Comments comments;
@@ -256,9 +266,10 @@ message_generator request_handler::post_root(long long session)
             if (text.find(s) != std::string::npos)
                 return server_error("spam detected");
         }
-        comments.add(nickname, text);
-        std::cerr << nickname << " posted" << std::endl;
+        comments.add(nickname, text, captcha, yield);
+        std::cerr << nickname << " tries to post" << std::endl;
 
+        // here show OK page and redirect
         std::string body = "you successfully posted";
         http::response<http::string_body> res;
         res.result(http::status::see_other);
@@ -355,7 +366,7 @@ static std::list<std::string> parse_target(const std::string &tgt)
     return ret;
 }
 
-message_generator request_handler::response()
+message_generator request_handler::response(yield_context yield)
 {
     std::string target = request.target();
     auto method = request.method();
@@ -419,7 +430,7 @@ message_generator request_handler::response()
             return get_root(session);
         } else if (method == http::verb::post) {
             if (have_session)
-                return post_root(session);
+                return post_root(session, yield);
             else
                 return bad_request("you must accept cookies");
         } else // HEAD

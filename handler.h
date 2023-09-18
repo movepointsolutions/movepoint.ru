@@ -2,11 +2,13 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
+#include <boost/asio/spawn.hpp>
 
 class request_handler
 {
     typedef boost::beast::http::string_body body_type;
     typedef boost::beast::http::request<body_type> request_type;
+    typedef boost::asio::yield_context yield_context;
     using message_generator = boost::beast::http::message_generator;
 
 protected:
@@ -18,7 +20,7 @@ protected:
     message_generator login(long long session);
     message_generator post_login(long long session);
     message_generator get_root(long long session);
-    message_generator post_root(long long session);
+    message_generator post_root(long long session, yield_context);
     message_generator post_status(long long session);
     message_generator get_invite(std::string invite);
     message_generator post_invite(std::string invite);
@@ -29,5 +31,5 @@ public:
     request_type request;
 
     request_handler(const std::string &, request_type &&);
-    boost::beast::http::message_generator response();
+    boost::beast::http::message_generator response(yield_context);
 };

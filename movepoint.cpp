@@ -69,7 +69,9 @@ do_session(
             return fail(ec, "read");
 
         request_handler handler(*doc_root, std::move(req));
-        http::message_generator msg = handler.response();
+        if(ec)
+            return fail(ec, "handle");
+        http::message_generator msg = handler.response(yield[ec]);
 
         // Determine if we should close the connection
         bool keep_alive = msg.keep_alive();

@@ -33,7 +33,8 @@ std::string Comments::content(const char *key)
     return s.str();
 }
 
-void Comments::add(const std::string &nickname, const std::string &text)
+void Comments::add(const std::string &nickname, const std::string &text,
+                   const std::string &captcha, yield_context yield)
 {
 	auto redis = get_redis();
 	redis.rpush(comments_key, nickname + "\n" + text);

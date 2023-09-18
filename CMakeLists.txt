@@ -12,6 +12,8 @@ find_package(Boost 1.68 REQUIRED COMPONENTS date_time regex unit_test_framework 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
+add_subdirectory(3rdparty)
+
 add_executable(movepoint
 	engine.cpp
     comment.cpp
@@ -25,11 +27,10 @@ add_executable(movepoint
     record.cpp
 	snippet.cpp
     handler.cpp
-    sha1/sha1.c
     session_manager.cpp
     form_part.cpp
 )
 
 set_property(TARGET movepoint PROPERTY CXX_STANDARD 20)
-target_include_directories(movepoint SYSTEM PUBLIC ${REDIS_INCLUDE_DIRS})
-target_link_libraries(movepoint mimetic ${Boost_LIBRARIES} ${REDIS_LIBRARIES} Threads::Threads)
+target_include_directories(movepoint SYSTEM PUBLIC ${REDIS_INCLUDE_DIRS} 3rdparty)
+target_link_libraries(movepoint mimetic sha1 ${Boost_LIBRARIES} ${REDIS_LIBRARIES} Threads::Threads)

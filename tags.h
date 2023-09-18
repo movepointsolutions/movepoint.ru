@@ -25,3 +25,4 @@ TAG(button);
 TAG(audio);
 TAG(video);
 TAG(source);
+TAG(br);

@@ -4,8 +4,6 @@ auto comment_view = [](long long session) {
     std::string dn{redis.display_name(login)};
     tags::h3 h3;
     h3.innerhtml("Обсудим?");
-    tags::div group;
-    group.push_attr("class", "form-group");
     tags::form form;
     form.push_attr("action", "/");
     form.push_attr("method", "post");
@@ -51,7 +49,17 @@ auto comment_view = [](long long session) {
         return label.content() + input.content();
     }();
     
-    const std::string ctl4 = [](){
+    const std::string ctl35 = [](){
+        tags::label label;
+        label.push_attr("for", "checkbox");
+        label.innerhtml("You are not robot (*)");
+        tags::div checkbox;
+        checkbox.push_attr("class", "h-captcha");
+        checkbox.push_attr("data-sitekey", "06f725e1-0343-4fc4-911e-1d0143282388");
+        return label.content() + checkbox.content();
+    }();
+
+    const std::string submit = [](){
         tags::button button;
         button.push_attr("class", "form-control");
         button.push_attr("type", "submit");
@@ -60,8 +68,13 @@ auto comment_view = [](long long session) {
         button.innerhtml("Send");
         return button.content();
     }();
-    form.innerhtml(ctl1 + ctl2 + ctl3 + ctl4);
+    std::string controls{ctl1 + ctl35 + ctl2 + ctl3};
+    if (false)
+        controls += submit;
+    form.innerhtml(controls);
 
+    tags::div group;
+    group.push_attr("class", "form-group");
     group.innerhtml(form.content());
     return h3.content() + group.content();
 };
