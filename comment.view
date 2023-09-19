@@ -69,7 +69,7 @@ auto comment_view = [](long long session) {
         return button.content();
     }();
     std::string controls{ctl1 + ctl35 + ctl2 + ctl3};
-    if (false)
+    if (!login.empty())
         controls += submit;
     form.innerhtml(controls);
 
